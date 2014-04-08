@@ -10,6 +10,7 @@ import simpledb.file.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
+   private int[] emptyFrameIndex;
    
    /**
     * Creates a buffer manager having the specified number 
@@ -26,9 +27,12 @@ class BasicBufferMgr {
     */
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
+      emptyFrameIndex = new int[numbuffs];
       numAvailable = numbuffs;
-      for (int i=0; i<numbuffs; i++)
+      for (int i=0; i<numbuffs; i++) {
          bufferpool[i] = new Buffer();
+         emptyFrameIndex[i] = i;
+      }
    }
    
    /**
@@ -58,8 +62,10 @@ class BasicBufferMgr {
             return null;
          buff.assignToBlock(blk);
       }
-      if (!buff.isPinned())
+      if (!buff.isPinned()) {
          numAvailable--;
+         
+      }
       buff.pin();
       return buff;
    }
