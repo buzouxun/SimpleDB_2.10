@@ -1,6 +1,8 @@
 package simpledb.buffer;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 
 import simpledb.file.*;
@@ -14,9 +16,11 @@ import simpledb.file.*;
 class BasicBufferMgr {
 	private Buffer[] bufferpool;
 	private int numAvailable;
-	private List<Integer> emptyFrameIndex; // CS4432-Project1: An array that
+	private LinkedList<Integer> emptyFrameIndex; // CS4432-Project1: An arraylist that
 											// keeps indices of all empty frames
-
+	private Hashtable<Integer, Integer> blockIndexTable; // CS4432-Project1: An hashtable that keeps current blocks number and its corresponding frame in the pool
+	private int currentIndex;
+	
 	/**
 	 * CS4432-Project1: Creates a buffer manager having the specified number of
 	 * buffer slots. This constructor depends on both the {@link FileMgr} and
@@ -31,11 +35,13 @@ class BasicBufferMgr {
 	 */
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
-		emptyFrameIndex = new ArrayList<Integer>();
 		numAvailable = numbuffs;
+		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
+		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
+		
 		for (int i = 0; i < numbuffs; i++) {
 			bufferpool[i] = new Buffer();
-			emptyFrameIndex.add(i);
+			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
 		}
 	}
 
@@ -68,6 +74,7 @@ class BasicBufferMgr {
 			if (buff == null)
 				return null;
 			buff.assignToBlock(blk);
+			blockIndexTable.put(buff.block().number(), currentIndex);  // CS4432-Project1: put the pair of block number and index into the hashtable
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
@@ -92,6 +99,7 @@ class BasicBufferMgr {
 		if (buff == null)
 			return null;
 		buff.assignToNew(filename, fmtr);
+		blockIndexTable.put(buff.block().number(), currentIndex);  // CS4432-Project1: put the pair of block number and index into the hashtable
 		numAvailable--;
 		buff.pin();
 		return buff;
@@ -118,11 +126,16 @@ class BasicBufferMgr {
 		return numAvailable;
 	}
 
+	
+	/**
+	 * CS4432-Project1: Efficient search for a given disk block by using hashtable
+	 * @param blk
+	 * @return
+	 */
 	private Buffer findExistingBuffer(Block blk) {
-		for (Buffer buff : bufferpool) {
-			Block b = buff.block();
-			if (b != null && b.equals(blk))
-				return buff;
+		Integer bufferIndex = blockIndexTable.get(blk);
+		if (bufferIndex != null) {
+			return bufferpool[bufferIndex];
 		}
 		return null;
 	}
@@ -132,14 +145,18 @@ class BasicBufferMgr {
 	 * @return
 	 */
 	private Buffer chooseUnpinnedBuffer() {
+		// find an empty frame and remove it from the empty frame list
 		if (!emptyFrameIndex.isEmpty()) {
-			Buffer buff = bufferpool[emptyFrameIndex.get(0)];
-			emptyFrameIndex.remove(0);
-			return buff;
+			return bufferpool[emptyFrameIndex.poll()];
 		}
-		for (Buffer buff : bufferpool)
-			if (!buff.isPinned())
-				return buff;
+		// find an unpinned frame
+		for (int i = 0; i < bufferpool.length; i++) {
+			if (!bufferpool[i].isPinned()) {
+				blockIndexTable.remove(bufferpool[i].block().number());
+				currentIndex = i;
+				return bufferpool[i];
+			}
+		}
 		return null;
 	}
 }
