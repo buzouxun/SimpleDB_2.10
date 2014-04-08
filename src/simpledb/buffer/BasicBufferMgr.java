@@ -1,5 +1,8 @@
 package simpledb.buffer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.file.*;
 
 /**
@@ -10,7 +13,7 @@ import simpledb.file.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
-   private int[] emptyFrameIndex;
+   private List<Integer> emptyFrameIndex;  // An array that keeps indices of all empty frames 
    
    /**
     * Creates a buffer manager having the specified number 
@@ -27,11 +30,11 @@ class BasicBufferMgr {
     */
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
-      emptyFrameIndex = new int[numbuffs];
+      emptyFrameIndex = new ArrayList<Integer>();
       numAvailable = numbuffs;
       for (int i=0; i<numbuffs; i++) {
          bufferpool[i] = new Buffer();
-         emptyFrameIndex[i] = i;
+         emptyFrameIndex.add(i);
       }
    }
    
@@ -64,7 +67,6 @@ class BasicBufferMgr {
       }
       if (!buff.isPinned()) {
          numAvailable--;
-         
       }
       buff.pin();
       return buff;
@@ -116,10 +118,15 @@ class BasicBufferMgr {
       return null;
    }
    
-   private Buffer chooseUnpinnedBuffer() {
-      for (Buffer buff : bufferpool)
-         if (!buff.isPinned())
-         return buff;
-      return null;
-   }
+	private Buffer chooseUnpinnedBuffer() {
+		if (!emptyFrameIndex.isEmpty()) {
+			Buffer buff = bufferpool[emptyFrameIndex.get(0)];
+			emptyFrameIndex.remove(0);
+			return buff;
+		}
+		for (Buffer buff : bufferpool)
+			if (!buff.isPinned())
+				return buff;
+		return null;
+	}
 }
