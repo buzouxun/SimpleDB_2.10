@@ -27,8 +27,8 @@ public class TestTask2_1 {
 		// create students table
 		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());
 
-		// initialize a new buffer manager which had 10 empty frames indexing from 0 to 9
-		int size_of_mt_buffers = 10;
+		// initialize a new buffer manager which had 12 empty frames indexing from 0 to 1
+		int size_of_mt_buffers = 12;
 		SimpleDB.setBm(new BufferMgr(size_of_mt_buffers) );
 		// clean up SimpleDB.myMetaData
 		SimpleDB.myMetaData.cleanUp();
@@ -36,13 +36,13 @@ public class TestTask2_1 {
 		// the first insertions of 6 records will not take all empty frames, since the size of relational data is not big enough
 		List<String> recs = TestUtility.get_values_persons();
 		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
-		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 		SimpleDB.myMetaData.printMtFrmLogs();
+		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 		
 		// after incrementally inserting another 6 records, the size of relational data is big enough to take all empty blocks
 		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
-		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() == (size_of_mt_buffers - 1) );
 		SimpleDB.myMetaData.printMtFrmLogs();
+		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() == (size_of_mt_buffers - 1) );
 	}
 
 }
