@@ -28,6 +28,9 @@ public class TableInfo {
       offsets  = new HashMap<String,Integer>();
       int pos = 0;
       for (String fldname : schema.fields()) {
+    	  
+    	  System.out.println("map.put - fldname: " + fldname + " | pos: " + pos);	//TODO
+    	  
          offsets.put(fldname, pos);
          pos += lengthInBytes(fldname);
       }
@@ -75,6 +78,13 @@ public class TableInfo {
     * @return the offset of that field within a record
     */
    public int offset(String fldname) {
+	   System.out.println("***");
+	   System.out.println("fldname: " + fldname);	//TODO
+//	   System.out.println("get(fldname): " + offsets.get(fldname));	//TODO
+	   if(offsets.get(fldname) == null) {
+		   System.out.println("offsets.get(fldname) == null");
+	   }
+	   
       return offsets.get(fldname);
    }
    

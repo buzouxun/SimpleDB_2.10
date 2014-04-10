@@ -1,12 +1,14 @@
 package simpledb.buffer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import simpledb.file.*;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
+
 import simpledb.server.SimpleDB;
 
 /**
@@ -21,7 +23,8 @@ class BasicBufferMgr {
 	//private List<Integer> emptyFrameIndex; // CS4432-Project1: An array that
 											// keeps indices of all empty frames
 	private LinkedList<Integer> emptyFrameIndex;
-	private Hashtable<Integer, Integer> blockIndexTable;
+//	private Hashtable<Integer, Integer> blockIndexTable;
+	private HashMap<Integer, Integer> blockIndexTable;
 	private int currentIndex;
 
 	/**
@@ -41,10 +44,11 @@ class BasicBufferMgr {
 //		emptyFrameIndex = new ArrayList<Integer>();
 		numAvailable = numbuffs;
 		emptyFrameIndex = new LinkedList<Integer>();
-		blockIndexTable = new Hashtable<Integer, Integer>();
+//		blockIndexTable = new Hashtable<Integer, Integer>();
+		blockIndexTable = new HashMap<Integer, Integer>();
 		
 		for (int i = 0; i < numbuffs; i++) {
-			bufferpool[i] = new Buffer();
+			bufferpool[i] = new Buffer(i);
 			emptyFrameIndex.add(i);
 		}
 	}
@@ -78,7 +82,12 @@ class BasicBufferMgr {
 			if (buff == null)
 				return null;
 			buff.assignToBlock(blk);
-			blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
+//			blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
+//			blockIndexTable.put(buff.block().number(), buff.bID);// TODO new
+			blockIndexTable.put(blk.hashCode(), buff.bID);// TODO new
+			System.out.print("pin - blk.hashCode(): " + blk.hashCode());
+//			blockIndexTable.put(blk.number(), buff.bID);// TODO new
+			System.out.println("pin, buffid: " + buff.bID);	//TODO
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
@@ -103,7 +112,12 @@ class BasicBufferMgr {
 		if (buff == null)
 			return null;
 		buff.assignToNew(filename, fmtr);
-		blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
+//		blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
+//		blockIndexTable.put(buff.block().number(), buff.bID);// TODO new
+		blockIndexTable.put(buff.block().hashCode(), buff.bID);// TODO new
+		System.out.print("pinNew - blk.hashCode(): " + buff.block().hashCode());
+//		blockIndexTable.put(buff.block().number(), buff.bID);// TODO new
+		System.out.println("pinNew, buffid: " + buff.bID);	//TODO
 		numAvailable--;
 		buff.pin();
 		return buff;
@@ -117,6 +131,7 @@ class BasicBufferMgr {
 	 */
 	synchronized void unpin(Buffer buff) {
 		buff.unpin();
+		System.out.println("unpin, buffid: " + buff.bID);	//TODO
 		if (!buff.isPinned())
 			numAvailable++;
 	}
@@ -135,7 +150,9 @@ class BasicBufferMgr {
 //			Block b = buff.block();
 //			if (b != null && b.equals(blk))
 //				return buff;
-		Integer bufferIndex = blockIndexTable.get(blk);
+//		Integer bufferIndex = blockIndexTable.get(blk);
+		Integer bufferIndex = blockIndexTable.get(blk.hashCode());
+//		Integer bufferIndex = blockIndexTable.get(blk.number());
 		if(bufferIndex != null) {
 			return bufferpool[bufferIndex];
 		}
@@ -155,8 +172,12 @@ class BasicBufferMgr {
 		}
 		for(int i = 0; i < bufferpool.length; i++) {
 			if(!bufferpool[i].isPinned()){
-				blockIndexTable.remove(bufferpool[i].block().number());
-				currentIndex = i;
+//				blockIndexTable.remove(bufferpool[i].block().number());
+				blockIndexTable.remove(bufferpool[i].block().hashCode());
+				System.out.print("remove - blk.hashCode(): " + bufferpool[i].block().hashCode());
+//				blockIndexTable.remove(bufferpool[i].block().number());
+				System.out.println("remove, buffid: " + bufferpool[i].bID);	//TODO
+//				currentIndex = i;
 				return bufferpool[i];
 			}
 		}

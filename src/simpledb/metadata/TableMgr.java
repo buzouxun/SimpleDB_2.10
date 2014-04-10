@@ -107,6 +107,9 @@ public class TableMgr {
          sch.addField(fldname, fldtype, fldlen);
       }
       fcatfile.close();
+      
+      System.out.println("offsets.keySet(): " + offsets.keySet());
+      
       return new TableInfo(tblname, sch, offsets, reclen);
    }
 }

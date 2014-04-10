@@ -19,6 +19,8 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
+   
+   public int bID = -1;
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -35,6 +37,9 @@ public class Buffer {
     * is called first.
     */
    public Buffer() {}
+   
+   // TODO new buffer
+   public Buffer(int id) {bID = id;}
    
    /**
     * Returns the integer value at the specified offset of the

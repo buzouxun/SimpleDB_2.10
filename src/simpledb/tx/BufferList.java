@@ -22,6 +22,11 @@ class BufferList {
     * @return the buffer pinned to that block
     */
    Buffer getBuffer(Block blk) {
+	   
+	   if(buffers.get(blk) == null) {
+		   System.out.println("getBuffer returns null");
+	   }
+	   
       return buffers.get(blk);
    }
    
