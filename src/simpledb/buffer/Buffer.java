@@ -102,7 +102,9 @@ public class Buffer {
 		this.refBit = refBit;
 	}
 
-/**
+   /**
+	* CS4432-Project1: Edit flushing method, flush here
+	*
     * Writes an integer to the specified offset of the
     * buffer's page.
     * This method assumes that the transaction has already
@@ -121,9 +123,12 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
+      flush();
    }
 
    /**
+    * CS4432-Project1: Edit flushing method, flush here
+    * 
     * Writes a string to the specified offset of the
     * buffer's page.
     * This method assumes that the transaction has already
@@ -142,6 +147,7 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
+      flush();
    }
 
    /**
@@ -202,6 +208,8 @@ public class Buffer {
    }
 
    /**
+    * CS4432-Project1: Delete flushing here, flush when it is modified in SetInt() and SetString()
+    * 
     * Reads the contents of the specified block into
     * the buffer's page.
     * If the buffer was dirty, then the contents
@@ -209,13 +217,15 @@ public class Buffer {
     * @param b a reference to the data block
     */
    void assignToBlock(Block b) {
-      flush();
+      //flush();
       blk = b;
       contents.read(blk);
       pins = 0;
    }
 
    /**
+    * CS4432-Project1: Delete flushing here, flush when it is modified in SetInt() and SetString()
+    * 
     * Initializes the buffer's page according to the specified formatter,
     * and appends the page to the specified file.
     * If the buffer was dirty, then the contents
@@ -224,7 +234,7 @@ public class Buffer {
     * @param fmtr a page formatter, used to initialize the page
     */
 	void assignToNew(String filename, PageFormatter fmtr) {
-		flush();
+		//flush();
 		fmtr.format(contents);
 		blk = contents.append(filename);
 		pins = 0;
