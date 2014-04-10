@@ -19,7 +19,8 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
-   private int bufferID = -1;
+   private int bufferID = -1;	// CS4432-Project1: Buffer ID that indicate the location of the buffer in buffer manager
+   private int refBit = 1;	// CS4432-Project1: The second chance bit for Clock replacement policy
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -72,6 +73,33 @@ public class Buffer {
 	 */
 	public int getLogSequenceNumber() {
 		return logSequenceNumber;
+	}
+	
+	/**
+	 * CS4432-Project1:
+	 * 
+	 * @return the bufferID
+	 */
+	public int getBufferID() {
+		return bufferID;
+	}
+
+	/**
+	 * CS4432-Project1:
+	 * 
+	 * @return the refBit
+	 */
+	public int getRefBit() {
+		return refBit;
+	}
+
+	/**
+	 * CS4432-Project1:
+	 * 
+	 * @param refBit the refBit to set
+	 */
+	public void setRefBit(int refBit) {
+		this.refBit = refBit;
 	}
 
 /**
@@ -201,12 +229,4 @@ public class Buffer {
 		blk = contents.append(filename);
 		pins = 0;
 	}
-
-	/**
-	 * @return the bufferID
-	 */
-	public int getBufferID() {
-		return bufferID;
-	}
-
 }

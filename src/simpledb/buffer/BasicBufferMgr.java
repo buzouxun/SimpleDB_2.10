@@ -1,10 +1,7 @@
 package simpledb.buffer;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
-
 import simpledb.buffer.BufferMgr.Policy;
 import simpledb.file.*;
 
@@ -195,6 +192,22 @@ class BasicBufferMgr {
 			if (oldestFrameIndex != -1) {
 				return bufferpool[oldestFrameIndex];
 			}
+		}
+
+		// find an unpinned frame with Clock Replacement policy
+		else if (policy == Policy.CLOCK) {
+			int k = 0;
+			while (k < 2)
+				for (int i = 0; i < bufferpool.length; i++) {
+					if (!bufferpool[i].isPinned()) {
+						if (bufferpool[i].getRefBit() == 1) {
+							bufferpool[i].setRefBit(0);
+						} else if (bufferpool[i].getRefBit() == 0) {
+							return bufferpool[i];
+						}
+					}
+				}
+			k++;
 		}
 		return null;
 	}
