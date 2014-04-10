@@ -5,6 +5,10 @@ import java.util.List;
 
 import simpledb.file.*;
 
+import java.util.Hashtable;
+import java.util.LinkedList;
+import simpledb.server.SimpleDB;
+
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  * 
@@ -14,8 +18,11 @@ import simpledb.file.*;
 class BasicBufferMgr {
 	private Buffer[] bufferpool;
 	private int numAvailable;
-	private List<Integer> emptyFrameIndex; // CS4432-Project1: An array that
+	//private List<Integer> emptyFrameIndex; // CS4432-Project1: An array that
 											// keeps indices of all empty frames
+	private LinkedList<Integer> emptyFrameIndex;
+	private Hashtable<Integer, Integer> blockIndexTable;
+	private int currentIndex;
 
 	/**
 	 * CS4432-Project1: Creates a buffer manager having the specified number of
@@ -31,8 +38,11 @@ class BasicBufferMgr {
 	 */
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
-		emptyFrameIndex = new ArrayList<Integer>();
+//		emptyFrameIndex = new ArrayList<Integer>();
 		numAvailable = numbuffs;
+		emptyFrameIndex = new LinkedList<Integer>();
+		blockIndexTable = new Hashtable<Integer, Integer>();
+		
 		for (int i = 0; i < numbuffs; i++) {
 			bufferpool[i] = new Buffer();
 			emptyFrameIndex.add(i);
@@ -68,6 +78,7 @@ class BasicBufferMgr {
 			if (buff == null)
 				return null;
 			buff.assignToBlock(blk);
+			blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
@@ -92,6 +103,7 @@ class BasicBufferMgr {
 		if (buff == null)
 			return null;
 		buff.assignToNew(filename, fmtr);
+		blockIndexTable.put(buff.block().number(), currentIndex);// TODO new
 		numAvailable--;
 		buff.pin();
 		return buff;
@@ -119,10 +131,13 @@ class BasicBufferMgr {
 	}
 
 	private Buffer findExistingBuffer(Block blk) {
-		for (Buffer buff : bufferpool) {
-			Block b = buff.block();
-			if (b != null && b.equals(blk))
-				return buff;
+//		for (Buffer buff : bufferpool) {
+//			Block b = buff.block();
+//			if (b != null && b.equals(blk))
+//				return buff;
+		Integer bufferIndex = blockIndexTable.get(blk);
+		if(bufferIndex != null) {
+			return bufferpool[bufferIndex];
 		}
 		return null;
 	}
@@ -133,13 +148,21 @@ class BasicBufferMgr {
 	 */
 	private Buffer chooseUnpinnedBuffer() {
 		if (!emptyFrameIndex.isEmpty()) {
-			Buffer buff = bufferpool[emptyFrameIndex.get(0)];
-			emptyFrameIndex.remove(0);
-			return buff;
+//			Buffer buff = bufferpool[emptyFrameIndex.get(0)];
+//			emptyFrameIndex.remove(0);
+//			return buff;
+			return bufferpool[emptyFrameIndex.poll()];
 		}
-		for (Buffer buff : bufferpool)
-			if (!buff.isPinned())
-				return buff;
+		for(int i = 0; i < bufferpool.length; i++) {
+			if(!bufferpool[i].isPinned()){
+				blockIndexTable.remove(bufferpool[i].block().number());
+				currentIndex = 1;
+				return bufferpool[i];
+			}
+		}
+//		for (Buffer buff : bufferpool)
+//			if (!buff.isPinned())
+//				return buff;
 		return null;
 	}
 }
