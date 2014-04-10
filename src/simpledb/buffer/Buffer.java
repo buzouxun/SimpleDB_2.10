@@ -19,6 +19,7 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
+   private int bufferID = -1;
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -35,6 +36,10 @@ public class Buffer {
     * is called first.
     */
    public Buffer() {}
+   
+   public Buffer(int index) {
+	   bufferID = index;
+   }
    
    /**
     * Returns the integer value at the specified offset of the
@@ -190,10 +195,18 @@ public class Buffer {
     * @param filename the name of the file
     * @param fmtr a page formatter, used to initialize the page
     */
-   void assignToNew(String filename, PageFormatter fmtr) {
-      flush();
-      fmtr.format(contents);
-      blk = contents.append(filename);
-      pins = 0;
-   }
+	void assignToNew(String filename, PageFormatter fmtr) {
+		flush();
+		fmtr.format(contents);
+		blk = contents.append(filename);
+		pins = 0;
+	}
+
+	/**
+	 * @return the bufferID
+	 */
+	public int getBufferID() {
+		return bufferID;
+	}
+
 }

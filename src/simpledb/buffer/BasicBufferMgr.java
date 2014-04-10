@@ -20,7 +20,6 @@ class BasicBufferMgr {
 	private LinkedList<Integer> emptyFrameIndex; // CS4432-Project1: An arraylist that
 											// keeps indices of all empty frames
 	private Hashtable<Integer, Integer> blockIndexTable; // CS4432-Project1: An hashtable that keeps current blocks number and its corresponding frame in the pool
-	private int currentIndex;	// CS4432-Project1: The buffer be assigned at the moment, used to add the pair to the hashtable
 	private Policy policy;	// CS4432-Project1: The buffer replacement policy
 	
 	/**
@@ -43,7 +42,7 @@ class BasicBufferMgr {
 		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
 		
 		for (int i = 0; i < numbuffs; i++) {
-			bufferpool[i] = new Buffer();
+			bufferpool[i] = new Buffer(i);
 			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
 		}
 	}
@@ -90,7 +89,7 @@ class BasicBufferMgr {
 			if (buff == null)
 				return null;
 			buff.assignToBlock(blk);
-			blockIndexTable.put(buff.block().number(), currentIndex);  // CS4432-Project1: put the pair of block number and index into the hashtable
+			blockIndexTable.put(buff.block().hashCode(), buff.getBufferID());  // CS4432-Project1: put the pair of block number and index into the hashtable
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
@@ -115,7 +114,7 @@ class BasicBufferMgr {
 		if (buff == null)
 			return null;
 		buff.assignToNew(filename, fmtr);
-		blockIndexTable.put(buff.block().number(), currentIndex);  // CS4432-Project1: put the pair of block number and index into the hashtable
+		blockIndexTable.put(buff.block().hashCode(), buff.getBufferID());  // CS4432-Project1: put the pair of block number and index into the hashtable
 		numAvailable--;
 		buff.pin();
 		return buff;
@@ -149,7 +148,7 @@ class BasicBufferMgr {
 	 * @return
 	 */
 	private Buffer findExistingBuffer(Block blk) {
-		Integer bufferIndex = blockIndexTable.get(blk);
+		Integer bufferIndex = blockIndexTable.get(blk.hashCode());
 		if (bufferIndex != null) {
 			return bufferpool[bufferIndex];
 		}
@@ -192,8 +191,7 @@ class BasicBufferMgr {
 				
 			}
 			
-			blockIndexTable.remove(bufferpool[oldestFrameIndex].block().number());
-			currentIndex = oldestFrameIndex;
+			blockIndexTable.remove(bufferpool[oldestFrameIndex].block().hashCode());
 			if (oldestFrameIndex != -1) {
 				return bufferpool[oldestFrameIndex];
 			}
