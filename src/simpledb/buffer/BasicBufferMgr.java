@@ -156,7 +156,7 @@ class BasicBufferMgr {
 		for(int i = 0; i < bufferpool.length; i++) {
 			if(!bufferpool[i].isPinned()){
 				blockIndexTable.remove(bufferpool[i].block().number());
-				currentIndex = 1;
+				currentIndex = i;
 				return bufferpool[i];
 			}
 		}
