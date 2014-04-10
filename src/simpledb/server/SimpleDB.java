@@ -1,5 +1,8 @@
 package simpledb.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.file.FileMgr;
 import simpledb.buffer.*;
 import simpledb.tx.Transaction;
@@ -23,7 +26,7 @@ import simpledb.index.planner.IndexUpdatePlanner;
  * @author Edward Sciore
  */
 public class SimpleDB {
-   public static int BUFFER_SIZE = 8;
+   public static int BUFFER_SIZE = 128;
    public static String LOG_FILE = "simpledb.log";
    
    private static FileMgr     fm;
@@ -104,4 +107,65 @@ public class SimpleDB {
       UpdatePlanner uplanner = new BasicUpdatePlanner();
       return new Planner(qplanner, uplanner);
    }
+
+    /**
+     * CS4432-Project1: setter for BufferMgr
+     * @author jzhu1 & tli
+     * @param bm the bm to set
+     */
+    public static void setBm(BufferMgr bm) {
+    	SimpleDB.bm = bm;
+    }
+    
+    /**
+     * CS4432-Project1: Meta data class storing various logs for 
+     * task2.1 - empty frames, task2.2 - efficient buffer search, 
+     * task2.3 - LRU & Clock policies, and transactions
+     * @author jzhu1 & tli
+     */
+//    public static class myMetaData {
+//    	
+//    	private static List<String> txLogs = new ArrayList<String>();
+//    	private static int mtFrmIndex = 0;
+//    	private static List<Integer> mtFrmLogs = new ArrayList<Integer>();
+//    	
+//    	/**
+//    	 * add a log while a new transaction created or a transaction committed
+//    	 * @param newLog
+//    	 */
+//    	public static void addTxLog(String newLog) {
+//    		txLogs.add(newLog);
+//    	}
+//    	
+//    	/**
+//    	 * add a log while an empty frame occupied
+//    	 */
+//    	public static void addMtFrmLog() {
+//    		mtFrmLogs.add( (Integer)mtFrmIndex );
+//    		mtFrmIndex ++;
+//    	}
+//    	
+//    	public static int getLastUsedMtFrmIndex() {
+//    		if(mtFrmLogs.size() > 0) {
+//    			return mtFrmLogs.get(mtFrmLogs.size()-1);
+//    		}
+//    		else {
+//    			return -1;
+//    		}
+//    	}
+//    	
+//    	
+//    	
+//    	
+//    	/**
+//    	 * clean up all logs
+//    	 */
+//    	public static void cleanUp() {
+//    		txLogs.clear();
+//    		mtFrmIndex = 0;
+//    		mtFrmLogs.clear();
+//    	}
+//    	
+//    }    
+    
 }
