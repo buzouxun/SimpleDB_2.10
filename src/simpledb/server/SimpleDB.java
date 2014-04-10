@@ -26,7 +26,7 @@ import simpledb.index.planner.IndexUpdatePlanner;
  * @author Edward Sciore
  */
 public class SimpleDB {
-   public static int BUFFER_SIZE = 128;
+   public static int BUFFER_SIZE = 8;
    public static String LOG_FILE = "simpledb.log";
    
    private static FileMgr     fm;
@@ -123,49 +123,55 @@ public class SimpleDB {
      * task2.3 - LRU & Clock policies, and transactions
      * @author jzhu1 & tli
      */
-//    public static class myMetaData {
-//    	
-//    	private static List<String> txLogs = new ArrayList<String>();
-//    	private static int mtFrmIndex = 0;
-//    	private static List<Integer> mtFrmLogs = new ArrayList<Integer>();
-//    	
-//    	/**
-//    	 * add a log while a new transaction created or a transaction committed
-//    	 * @param newLog
-//    	 */
-//    	public static void addTxLog(String newLog) {
-//    		txLogs.add(newLog);
-//    	}
-//    	
-//    	/**
-//    	 * add a log while an empty frame occupied
-//    	 */
-//    	public static void addMtFrmLog() {
-//    		mtFrmLogs.add( (Integer)mtFrmIndex );
-//    		mtFrmIndex ++;
-//    	}
-//    	
-//    	public static int getLastUsedMtFrmIndex() {
-//    		if(mtFrmLogs.size() > 0) {
-//    			return mtFrmLogs.get(mtFrmLogs.size()-1);
-//    		}
-//    		else {
-//    			return -1;
-//    		}
-//    	}
-//    	
-//    	
-//    	
-//    	
-//    	/**
-//    	 * clean up all logs
-//    	 */
-//    	public static void cleanUp() {
-//    		txLogs.clear();
-//    		mtFrmIndex = 0;
-//    		mtFrmLogs.clear();
-//    	}
-//    	
-//    }    
+    public static class myMetaData {
+    	
+    	private static List<String> txLogs = new ArrayList<String>();
+    	private static int mtFrmIndex = 0;
+    	private static List<Integer> mtFrmLogs = new ArrayList<Integer>();
+    	
+    	/**
+    	 * add a log while a new transaction created or a transaction committed
+    	 * @param newLog
+    	 */
+    	public static void addTxLog(String newLog) {
+    		txLogs.add(newLog);
+    	}
+    	
+    	/**
+    	 * add a log while an empty frame occupied
+    	 */
+    	public static void addMtFrmLog() {
+    		mtFrmLogs.add( (Integer)mtFrmIndex );
+    		mtFrmIndex ++;
+    	}
+    	
+    	public static int getLastUsedMtFrmIndex() {
+    		if(mtFrmLogs.size() > 0) {
+    			return mtFrmLogs.get(mtFrmLogs.size()-1);
+    		}
+    		else {
+    			return -1;
+    		}
+    	}
+    	
+    	public static void printMtFrmLogs() {
+    		for(int i = 0; i<mtFrmLogs.size(); i++) {
+    			System.out.println("Empty buffer: " + mtFrmLogs.get(i) + " was occupied");
+    		}
+    	}
+    	
+    	
+    	
+    	
+    	/**
+    	 * clean up all logs
+    	 */
+    	public static void cleanUp() {
+    		txLogs.clear();
+    		mtFrmIndex = 0;
+    		mtFrmLogs.clear();
+    	}
+    	
+    }    
     
 }

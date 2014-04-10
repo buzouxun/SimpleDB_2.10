@@ -7,6 +7,7 @@ import java.util.List;
 
 import simpledb.buffer.BufferMgr.Policy;
 import simpledb.file.*;
+import simpledb.server.SimpleDB;
 
 /**
  * Manages the pinning and unpinning of buffers to blocks.
@@ -83,6 +84,9 @@ class BasicBufferMgr {
 	 * @return the pinned buffer
 	 */
 	synchronized Buffer pin(Block blk) {
+		
+		System.out.println("*-*pin");	//TODO testing
+		
 		Buffer buff = findExistingBuffer(blk);
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
@@ -110,6 +114,9 @@ class BasicBufferMgr {
 	 * @return the pinned buffer
 	 */
 	synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
+		
+		System.out.println("*-*pinNew");	//TODO testing
+		
 		Buffer buff = chooseUnpinnedBuffer();
 		if (buff == null)
 			return null;
@@ -148,6 +155,10 @@ class BasicBufferMgr {
 	 * @return
 	 */
 	private Buffer findExistingBuffer(Block blk) {
+		
+		System.out.println("\nIN findExistingBuffer");
+		System.out.println("blockIndexTable.keySet(): " + blockIndexTable.keySet());
+		
 		Integer bufferIndex = blockIndexTable.get(blk.hashCode());
 		if (bufferIndex != null) {
 			return bufferpool[bufferIndex];
@@ -162,16 +173,16 @@ class BasicBufferMgr {
 	private Buffer chooseUnpinnedBuffer() {
 		// find an empty frame and remove it from the empty frame list
 		if (!emptyFrameIndex.isEmpty()) {
+			// add a log to myMetaData
+			SimpleDB.myMetaData.addMtFrmLog();
+			
+			// TODO testing
+			System.out.println("emptyFrameIndex.size(): " + emptyFrameIndex.size());
+			
 			return bufferpool[emptyFrameIndex.poll()];
-		}
+		}		
 		
-		/*for (int i = 0; i < bufferpool.length; i++) {
-			if (!bufferpool[i].isPinned()) {
-				blockIndexTable.remove(bufferpool[i].block().number());
-				currentIndex = i;
-				return bufferpool[i];
-			}
-		}*/
+		System.out.println("outside of empty frames");	//TODO testing
 		
 		// find an unpinned frame with LRU Replacement policy
 		if (policy == Policy.LRU) {
