@@ -137,6 +137,12 @@ public class SimpleDB {
     		txLogs.add(newLog);
     	}
     	
+    	public static void printTxLogs() {
+    		for(int i = 0; i < txLogs.size(); i+=2) {
+    			System.out.println(txLogs.get(i) + "\t|\t" + txLogs.get(i+1));
+    		}
+    	}
+    	
     	/**
     	 * add a log while an empty frame occupied
     	 */

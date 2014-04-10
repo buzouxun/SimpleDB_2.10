@@ -20,71 +20,29 @@ import simpledb.server.SimpleDB;
  */
 public class TestTask2_1 {
 
-	/*
-	@Test
-	public void exec_crt_tbl_persons() {
-		// analogous to the driver
-		SimpleDB.init("studentdb");	
-		// create students table
-		int numAffRecs = TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());
-		assertEquals(0, numAffRecs);
-	}
-	
-	@Test
-	public void exec_insert_values_persons() {
-		// analogous to the driver
-		SimpleDB.init("studentdb");
-		// create students table
-		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());	
-		// insert values of students
-		int numAffRecs = TestUtility.exec_insert_values(TestUtility.get_values_persons(), SimpleDB.planner());
-		assertEquals(3, numAffRecs);
-	}
-	
-	*/
-
 	@Test
 	public void test_empty_frames_while_insert_values_into_students_table() {
 		// analogous to the driver
 		SimpleDB.init("studentdb");
-		
-		
 		// create students table
 		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());
 
-		// initialize a new buffer manager which had 40 empty frames indexing from 0 to 39
-		SimpleDB.setBm(new BufferMgr(40) );
-		// re-initialize empty buffers
-//		SimpleDB.bufferMgr().
+		// initialize a new buffer manager which had 10 empty frames indexing from 0 to 9
+		int size_of_mt_buffers = 10;
+		SimpleDB.setBm(new BufferMgr(size_of_mt_buffers) );
 		// clean up SimpleDB.myMetaData
 		SimpleDB.myMetaData.cleanUp();
-		
-		// get student records to be inserted
+
+		// the first insertions of 6 records will not take all empty frames, since the size of relational data is not big enough
 		List<String> recs = TestUtility.get_values_persons();
-		// insert the first student record
-//		TestUtility.exec_insert_values(recs.subList(0, 1), SimpleDB.planner());
-//		assertEquals(15, SimpleDB.myMetaData.getLastUsedMtFrmIndex() );
-		// insert the second student record
-//		TestUtility.exec_insert_values(recs.subList(1, 2), SimpleDB.planner());
-//		assertEquals(31, SimpleDB.myMetaData.getLastUsedMtFrmIndex() );
-		// insert the third student record
-//		TestUtility.exec_insert_values(recs.subList(2, 3), SimpleDB.planner());
-//		assertEquals(39, SimpleDB.myMetaData.getLastUsedMtFrmIndex() );
-		
-		SimpleDB.myMetaData.printMtFrmLogs(); System.out.println("***");
-		
-		System.out.println(recs.subList(0, 1).get(0));
-		TestUtility.exec_insert_values(recs.subList(0, 1), SimpleDB.planner());
+		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
+		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 		SimpleDB.myMetaData.printMtFrmLogs();
 		
-		System.out.println(recs.subList(1, 2).get(0));
-		TestUtility.exec_insert_values(recs.subList(1, 2), SimpleDB.planner());
+		// after incrementally inserting another 6 records, the size of relational data is big enough to take all empty blocks
+		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
+		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() == (size_of_mt_buffers - 1) );
 		SimpleDB.myMetaData.printMtFrmLogs();
-		
-		System.out.println(recs.subList(2, 3).get(0));
-		TestUtility.exec_insert_values(recs.subList(2, 3), SimpleDB.planner());
-		SimpleDB.myMetaData.printMtFrmLogs();
-		
 	}
 
 }
