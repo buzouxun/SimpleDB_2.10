@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import simpledb.planner.Planner;
+import simpledb.query.Plan;
 import simpledb.tx.Transaction;
 
 public class TestUtility {
@@ -48,6 +49,24 @@ public class TestUtility {
 		}
 		return students_values;
 	}
+	
+	@SuppressWarnings("resource")
+	public static String get_select_name_of_students() {
+		String query = "";
+		String  thisLine = null;
+		FileReader file = null;
+		try{
+			file = new FileReader(System.getProperty("user.dir") + "/test/sql_examples/select_students.sql");
+			BufferedReader reader = new BufferedReader(file);
+			// check new line
+			if ((thisLine = reader.readLine()) != null) {
+				query = thisLine;
+			}       
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return query;
+	}
 
 	public static int exec_crt_tbl(String crt_tbl_persons, Planner planner) {
 		int numRecs = 0;
@@ -66,6 +85,13 @@ public class TestUtility {
 			tx.commit();
 		}
 		return sumRecs;
+	}
+	
+	public static Plan exec_select(String query, Planner planner) {
+		Transaction tx = new Transaction();
+		Plan p = planner.createQueryPlan(query, tx);
+		tx.commit();
+		return p;
 	}
 
 

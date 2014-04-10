@@ -39,13 +39,13 @@ public class TestTask2_1 {
 		// create students table
 		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());
 
-		// initialize a new buffer manager which had 12 empty frames indexing from 0 to 1
+		// initialize a new buffer manager which has 12 empty buffers indexing from 0 to 11
 		int size_of_mt_buffers = 12;
 		SimpleDB.setBm(new BufferMgr(size_of_mt_buffers) );
 		// clean up SimpleDB.myMetaData
 		SimpleDB.myMetaData.cleanUp();
 
-		// the first insertions of 6 records will not take all empty frames, since the size of relational data is not big enough
+		// the first insertions of 6 records will not take all empty buffers, since the size of relational data is not big enough
 		List<String> recs = TestUtility.get_values_persons();
 		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
 		SimpleDB.myMetaData.printMtFrmLogs();
