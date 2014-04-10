@@ -2,6 +2,9 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import simpledb.tx.Transaction;
@@ -19,6 +22,15 @@ import simpledb.server.SimpleDB;
  *
  */
 public class TestTask2_1 {
+	
+	@Before
+	public void delete_students_tbl() {
+		String user_home_path = System.getProperty("user.home").replace("\\", "/");
+		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/students.tbl");
+		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/fldcat.tbl");
+		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/tblcat.tbl");
+		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/simpledb.log");
+	}
 
 	@Test
 	public void test_empty_frames_while_insert_values_into_students_table() {
@@ -44,5 +56,7 @@ public class TestTask2_1 {
 		SimpleDB.myMetaData.printMtFrmLogs();
 		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() == (size_of_mt_buffers - 1) );
 	}
+	
+	
 
 }
