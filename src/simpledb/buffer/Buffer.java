@@ -60,7 +60,16 @@ public class Buffer {
       return contents.getString(offset);
    }
 
-   /**
+	/**
+	 * CS4432-Project1: Get the logSequenceNumber to find the frame with the oldest time
+	 * 
+	 * @return the logSequenceNumber
+	 */
+	public int getLogSequenceNumber() {
+		return logSequenceNumber;
+	}
+
+/**
     * Writes an integer to the specified offset of the
     * buffer's page.
     * This method assumes that the transaction has already

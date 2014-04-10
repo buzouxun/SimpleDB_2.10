@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import simpledb.buffer.BufferMgr.Policy;
 import simpledb.file.*;
 
 /**
@@ -19,7 +20,8 @@ class BasicBufferMgr {
 	private LinkedList<Integer> emptyFrameIndex; // CS4432-Project1: An arraylist that
 											// keeps indices of all empty frames
 	private Hashtable<Integer, Integer> blockIndexTable; // CS4432-Project1: An hashtable that keeps current blocks number and its corresponding frame in the pool
-	private int currentIndex;
+	private int currentIndex;	// CS4432-Project1: The buffer be assigned at the moment, used to add the pair to the hashtable
+	private Policy policy;	// CS4432-Project1: The buffer replacement policy
 	
 	/**
 	 * CS4432-Project1: Creates a buffer manager having the specified number of
@@ -36,6 +38,20 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
+		policy = Policy.LRU;
+		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
+		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
+		
+		for (int i = 0; i < numbuffs; i++) {
+			bufferpool[i] = new Buffer();
+			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
+		}
+	}
+	
+	BasicBufferMgr(int numbuffs, Policy policy) {
+		bufferpool = new Buffer[numbuffs];
+		numAvailable = numbuffs;
+		this.policy = policy;
 		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
 		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
 		
@@ -149,12 +165,37 @@ class BasicBufferMgr {
 		if (!emptyFrameIndex.isEmpty()) {
 			return bufferpool[emptyFrameIndex.poll()];
 		}
-		// find an unpinned frame
-		for (int i = 0; i < bufferpool.length; i++) {
+		
+		/*for (int i = 0; i < bufferpool.length; i++) {
 			if (!bufferpool[i].isPinned()) {
 				blockIndexTable.remove(bufferpool[i].block().number());
 				currentIndex = i;
 				return bufferpool[i];
+			}
+		}*/
+		
+		// find an unpinned frame with LRU Replacement policy
+		if (policy == Policy.LRU) {
+			int oldestFrameTime = 2147483647;	// The time of last modified Frame
+			int currentFrameTime;	// The time of the Frame on current loop
+			int oldestFrameIndex = -1;	// The index of the last modified Frame
+			
+			// Find the last modified frame 
+			for (int i = 0; i < bufferpool.length; i++) {
+				if (!bufferpool[i].isPinned()) {
+					currentFrameTime = bufferpool[i].getLogSequenceNumber();
+					if (currentFrameTime < oldestFrameTime) {
+						oldestFrameTime = currentFrameTime;
+						oldestFrameIndex = i;
+					}
+				}
+				
+			}
+			
+			blockIndexTable.remove(bufferpool[oldestFrameIndex].block().number());
+			currentIndex = oldestFrameIndex;
+			if (oldestFrameIndex != -1) {
+				return bufferpool[oldestFrameIndex];
 			}
 		}
 		return null;

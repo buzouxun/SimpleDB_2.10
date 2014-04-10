@@ -21,6 +21,7 @@ import simpledb.file.*;
 public class BufferMgr {
    private static final long MAX_TIME = 10000; // 10 seconds
    private BasicBufferMgr bufferMgr;
+   protected enum Policy {LRU, CLOCK};
    
    /**
     * Creates a new buffer manager having the specified 
@@ -35,9 +36,22 @@ public class BufferMgr {
     * is called first.
     * @param numbuffers the number of buffer slots to allocate
     */
-   public BufferMgr(int numbuffers) {
-      bufferMgr = new BasicBufferMgr(numbuffers);
-   }
+	public BufferMgr(int numbuffers) {
+		bufferMgr = new BasicBufferMgr(numbuffers);
+	}
+
+	/**
+	 * CS4432-Project1
+	 * 
+	 * Creates a new buffer manager same as last one, but with
+	 * specified replacement policy.
+	 * 
+	 * @param numbuffers the number of buffer slots to allocate
+	 * @param policy the buffer replacement policy
+	 */
+	public BufferMgr(int numbuffers, Policy policy) {
+		bufferMgr = new BasicBufferMgr(numbuffers, policy);
+	}
    
    /**
     * Pins a buffer to the specified block, potentially
