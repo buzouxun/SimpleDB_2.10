@@ -1,10 +1,7 @@
 package simpledb.buffer;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
-
 import simpledb.buffer.BufferMgr.Policy;
 import simpledb.file.*;
 import simpledb.server.SimpleDB;
