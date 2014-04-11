@@ -37,7 +37,7 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
-		policy = Policy.LRU;
+		policy = Policy.CLOCK;
 		emptyFrameIndex = new LinkedList<Integer>();
 		blockIndexTable = new Hashtable<Integer, Integer>();
 
@@ -196,6 +196,27 @@ class BasicBufferMgr {
 				SimpleDB.myMetaData.addLRUBufferIdLog(bufferpool[oldestFrameIndex].getBufferID());
 				return bufferpool[oldestFrameIndex];
 			}
+		}
+		
+		// find an unpinned frame with Clock Replacement policy
+		else if (policy == Policy.CLOCK) {
+			System.out.println("In clock policy");
+			int k = 0;
+			while (k < 2)
+				for (int i = 0; i < bufferpool.length; i++) {
+					if (!bufferpool[i].isPinned()) {
+						if (bufferpool[i].getRefBit() == 1) {
+							bufferpool[i].setRefBit(0);
+						} else if (bufferpool[i].getRefBit() == 0) {
+							System.out.println("Successfully return on " + k
+									+ "th time");
+							blockIndexTable.remove(bufferpool[i].block().hashCode());
+							return bufferpool[i];
+						}
+					}
+				}
+			System.out.println(k + "th time");
+			k++;
 		}
 
 		return null;

@@ -1,0 +1,35 @@
+CS 4432 Project1: Design Description.
+
+Task 2.1 Efficient finding of Empty Frame
+
+To speed up this finding process, a new linkedlist of empty frame index is used. All frames are in the linkedlist when initializing, and if a block is assigned to one frame(pin() or pinnew() in the BasicBufferMgr.java), this frame would be removed from it. Thus the linkedlist are always the list of all empty frames. So finding a empty frame can be done by returning the frame whose index is the first element of the linkedlist(in the chooseUnpinnedBuffer() in the BasicBufferMgr.java), which is in constant time.
+
+
+Task 2.2 Efficient Search for a Given Disk Block
+
+To speed up this search process, a new hashmap with pair of an index of a block and an index of the corresponding frame. Each time a block or a new file be assigned to a frame(pin() or pinnew() in the BasicBufferMgr.java), a pair of them would be added to the hashmap. Thus if we want the frame index of the given disk block(by calling findExistingBuffer() in the BasicBufferMgr.java), we can use the get(key) function for hashmap to search it efficiently.
+
+
+Task 2.3 Part A: LRU Replacement Policy
+
+This policy is implemented in the chosseUnpinnedBuffer() in the BasicBufferMgr.java. The last modified time of a buffer is gotten from the logSequenceNumber of the Buffer.java. Then the unpinned frame with least logSequenceNumber(modified time) is found and returned.
+
+
+Task 2.3 Part B: Clock Replacement Policy
+
+This policy is also implemented in the chosseUnpinnedBuffer() in the BasicBufferMgr.java. The refbit is added as a field of the Buffer.java and set to 1 when initialized and modified(SetInt() and SetString() in Buffer.java). Then the loop is implemented to skip pinned frame, set the 1 frame bitref to and return a frame with bitref 0. This loop would repeat for one time, or a null would be returned.
+
+
+Task 2.4 Other Basic Functionalities
+
+The pin counter has been implemented by the original simpleDB. To flush dirty frame, the flusing fucntion is move from assignToBlock() & assignToNew() to SetInt() & SetString(). This change can ensure the dirty frame is flushed as soon as it is modified.
+
+
+Task 2.5 Reporting Functions
+
+The toSting() method is basically kept from the orginal simpleDB. Instead, we have add many reporting function in our test, which almost cover the functionality of the toString() method
+
+
+Task 2.6 Testing Program
+
+See Testing.txt

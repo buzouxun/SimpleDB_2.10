@@ -20,6 +20,7 @@ public class Buffer {
    private int modifiedBy = -1;  		// negative means not modified
    private int logSequenceNumber = -1; 	// negative means no corresponding log record
    private int bufferID = -1;			// CS4432-Project1: the unique id for each buffer
+   private int refBit = 1;				// CS4432-Project1: the refbit for clock replacement policy
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -73,6 +74,25 @@ public class Buffer {
 	public int getLogSequenceNumber() {
 		return logSequenceNumber;
 	}
+	
+	/**
+	 * CS4432-Project1:
+	 * 
+	 * @return the refBit
+	 */
+	public int getRefBit() {
+		return refBit;
+	}
+
+	/**
+	 * CS4432-Project1:
+	 * 
+	 * @param refBit
+	 *            the refBit to set
+	 */
+	public void setRefBit(int refBit) {
+		this.refBit = refBit;
+	}
 
 /**
     * Writes an integer to the specified offset of the
@@ -93,6 +113,8 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
+      setRefBit(1);		// CS 4432 Project1: Set the refBit
+      flush();			// CS 4432 Project1: Flushing 
    }
 
    /**
@@ -114,6 +136,8 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
+      setRefBit(1);		// CS 4432 Project1: Set the refBit
+      flush();			// CS 4432 Project1: Flushing 
    }
 
    /**
@@ -181,7 +205,7 @@ public class Buffer {
     * @param b a reference to the data block
     */
    void assignToBlock(Block b) {
-      flush();
+      // flush();
       blk = b;
       contents.read(blk);
       pins = 0;
@@ -196,7 +220,7 @@ public class Buffer {
     * @param fmtr a page formatter, used to initialize the page
     */
 	void assignToNew(String filename, PageFormatter fmtr) {
-		flush();
+		// flush();
 		fmtr.format(contents);
 		blk = contents.append(filename);
 		pins = 0;
