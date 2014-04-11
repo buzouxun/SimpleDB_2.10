@@ -1,0 +1,10 @@
+CS 4133 Project 1: Bugs decription.
+
+The only non-working part in this project is about the Clock Replacement Policy. If we choose Clock Replacement Policy, create the table and insert some records, An java.nio.BufferUnderflowException would be thrown. One possible reason is that the field of buffer is modified when insertion is implemented, which may cause bound problems. Unfortunately we cannot figure it out.
+
+To choose the replacement policy, an construcor of BufferMgr.java:
+	public BufferMgr(int numbuffers, Policy policy)
+may used where the policy is:
+	public enum Policy {LRU, CLOCK}
+Note that the default replacement policy is the LRU replacement policy.
+
