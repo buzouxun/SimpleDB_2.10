@@ -129,6 +129,8 @@ public class SimpleDB {
     	private static int mtFrmIndex = 0;
     	private static List<Integer> mtFrmLogs = new ArrayList<Integer>();
     	
+    	public static List<Integer> LRUBufferIdLogs = new ArrayList<Integer>();
+    	
     	/**
     	 * add a log while a new transaction created or a transaction committed
     	 * @param newLog
@@ -166,7 +168,13 @@ public class SimpleDB {
     		}
     	}
     	
+    	public static void addLRUBufferIdLog(int id) {
+    		LRUBufferIdLogs.add(id);
+		}
     	
+    	public static void LRUBufferIdLogCleanUp() {
+    		LRUBufferIdLogs.clear();
+    	}
     	
     	
     	/**
@@ -176,7 +184,10 @@ public class SimpleDB {
     		txLogs.clear();
     		mtFrmIndex = 0;
     		mtFrmLogs.clear();
+    		LRUBufferIdLogs.clear();
     	}
+
+		
     	
     }    
     

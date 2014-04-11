@@ -14,6 +14,10 @@ import simpledb.tx.Transaction;
 
 public class TestUtility {
 
+	/**
+	 * create table of students.sql
+	 * @return
+	 */
 	@SuppressWarnings("resource")
 	public static String get_crt_tbl_students() {
 		String students_tbl = "";
@@ -94,7 +98,43 @@ public class TestUtility {
 		return p;
 	}
 
-
+	/**
+	 * create table of students.sql
+	 * @return
+	 */
+	@SuppressWarnings("resource")
+	public static String get_crt_tbl_computers() {
+		String students_tbl = "";
+		String  thisLine = null;
+		FileReader file = null;
+		try{
+			file = new FileReader(System.getProperty("user.dir") + "/test/sql_examples/create_computers.sql");
+			BufferedReader reader = new BufferedReader(file);
+			// check new line
+			if ((thisLine = reader.readLine()) != null) {
+				students_tbl = thisLine;
+			}       
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return students_tbl;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static void JavaDeleteFile(String file) {
 		try
 		{

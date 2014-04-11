@@ -1,0 +1,1 @@
+CREATE TABLE Students ( year int, size int, Maker varchar(256));

@@ -76,7 +76,6 @@ public class TestTask2_2 {
 	private String concat_results(Plan p1) {
 		String results = "";
 		Scan s = p1.open();
-		String s_names = "";
 		while (s.next()) {
 			String name = s.getString("name");
 			results += name;
