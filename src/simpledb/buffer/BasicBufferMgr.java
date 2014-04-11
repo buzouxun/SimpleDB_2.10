@@ -34,7 +34,7 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
-		policy = Policy.LRU;
+		policy = Policy.CLOCK;
 		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
 		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
 		
@@ -52,7 +52,7 @@ class BasicBufferMgr {
 		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
 		
 		for (int i = 0; i < numbuffs; i++) {
-			bufferpool[i] = new Buffer();
+			bufferpool[i] = new Buffer(i);
 			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
 		}
 	}
@@ -169,7 +169,7 @@ class BasicBufferMgr {
 				return bufferpool[i];
 			}
 		}*/
-		
+		System.out.println("Failed to find the empty");
 		// find an unpinned frame with LRU Replacement policy
 		if (policy == Policy.LRU) {
 			int oldestFrameTime = 2147483647;	// The time of last modified Frame
@@ -196,6 +196,7 @@ class BasicBufferMgr {
 
 		// find an unpinned frame with Clock Replacement policy
 		else if (policy == Policy.CLOCK) {
+			System.out.println("In clock policy");
 			int k = 0;
 			while (k < 2)
 				for (int i = 0; i < bufferpool.length; i++) {
@@ -203,10 +204,12 @@ class BasicBufferMgr {
 						if (bufferpool[i].getRefBit() == 1) {
 							bufferpool[i].setRefBit(0);
 						} else if (bufferpool[i].getRefBit() == 0) {
+							System.out.println("Successfully return on " + k + "th time");
 							return bufferpool[i];
 						}
 					}
 				}
+			System.out.println(k + "th time");
 			k++;
 		}
 		return null;
