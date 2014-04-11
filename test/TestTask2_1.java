@@ -2,14 +2,10 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import simpledb.tx.Transaction;
 import simpledb.buffer.BufferMgr;
-import simpledb.query.*;
 import simpledb.server.SimpleDB;
 
 
@@ -35,6 +31,7 @@ public class TestTask2_1 {
 	@Test
 	public void test_empty_frames_while_insert_values_into_students_table() {
 		
+		// description to be printed
 		String printout = "\n";
 		
 		// analogous to the driver

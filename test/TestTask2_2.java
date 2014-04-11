@@ -32,6 +32,7 @@ public class TestTask2_2 {
 	@Test
 	public void test_find_existing_buffers_while_running_same_query() {
 		
+		// description to be printed
 		String printout = "\n";
 
 		// analogous to the driver

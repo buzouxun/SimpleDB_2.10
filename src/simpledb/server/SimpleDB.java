@@ -120,7 +120,7 @@ public class SimpleDB {
     /**
      * CS4432-Project1: Meta data class storing various logs for 
      * task2.1 - empty frames, task2.2 - efficient buffer search, 
-     * task2.3 - LRU & Clock policies, and transactions
+     * task2.3 - list of buffers under LRU & Clock policies, and transactions
      * @author jzhu1 & tli
      */
     public static class myMetaData {
@@ -128,17 +128,19 @@ public class SimpleDB {
     	private static List<String> txLogs = new ArrayList<String>();
     	private static int mtFrmIndex = 0;
     	private static List<Integer> mtFrmLogs = new ArrayList<Integer>();
-    	
     	public static List<Integer> LRUBufferIdLogs = new ArrayList<Integer>();
     	
     	/**
-    	 * add a log while a new transaction created or a transaction committed
+    	 * CS4432-Project1: add a log while a new transaction created or a transaction committed
     	 * @param newLog
     	 */
     	public static void addTxLog(String newLog) {
     		txLogs.add(newLog);
     	}
     	
+    	/**
+    	 * CS4432-Project1: print transaction logs
+    	 */
     	public static void printTxLogs() {
     		for(int i = 0; i < txLogs.size(); i+=2) {
     			System.out.println(txLogs.get(i) + "\t|\t" + txLogs.get(i+1));
@@ -146,13 +148,17 @@ public class SimpleDB {
     	}
     	
     	/**
-    	 * add a log while an empty frame occupied
+    	 * CS4432-Project1: add a log while an empty frame occupied
     	 */
     	public static void addMtFrmLog() {
     		mtFrmLogs.add( (Integer)mtFrmIndex );
     		mtFrmIndex ++;
     	}
     	
+    	/**
+    	 * CS4432-Project1: get the last used/occupied empty buffer/frame id
+    	 * @return
+    	 */
     	public static int getLastUsedMtFrmIndex() {
     		if(mtFrmLogs.size() > 0) {
     			return mtFrmLogs.get(mtFrmLogs.size()-1);
@@ -162,23 +168,33 @@ public class SimpleDB {
     		}
     	}
     	
+    	/**
+    	 * CS4432-Project1: print empty buffer/frame log
+    	 */
     	public static void printMtFrmLogs() {
     		for(int i = 0; i<mtFrmLogs.size(); i++) {
     			System.out.println("Empty buffer: " + mtFrmLogs.get(i) + " was occupied");
     		}
     	}
     	
+    	/**
+    	 * CS4432-Project1: add buffer ID under LRU policy into log
+    	 * @param id
+    	 */
     	public static void addLRUBufferIdLog(int id) {
     		LRUBufferIdLogs.add(id);
 		}
     	
+    	/**
+    	 * CS4432-Project1: clean up LRUBufferIdLog
+    	 */
     	public static void LRUBufferIdLogCleanUp() {
     		LRUBufferIdLogs.clear();
     	}
     	
     	
     	/**
-    	 * clean up all logs
+    	 * CS4432-Project1: clean up all logs
     	 */
     	public static void cleanUp() {
     		txLogs.clear();
@@ -186,8 +202,6 @@ public class SimpleDB {
     		mtFrmLogs.clear();
     		LRUBufferIdLogs.clear();
     	}
-
-		
     	
     }    
     

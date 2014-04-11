@@ -1,1 +1,1 @@
-CREATE TABLE Students ( year int, size int, Maker varchar(256));
+CREATE TABLE computers ( year int, size int, Maker varchar(256));

@@ -18,10 +18,9 @@ import simpledb.server.SimpleDB;
 class BasicBufferMgr {
 	private Buffer[] bufferpool;
 	private int numAvailable;
-	private LinkedList<Integer> emptyFrameIndex; // CS4432-Project1: An arraylist that
-	// keeps indices of all empty frames
-	private Hashtable<Integer, Integer> blockIndexTable; // CS4432-Project1: An hashtable that keeps current blocks number and its corresponding frame in the pool
-	private Policy policy;	// CS4432-Project1: The buffer replacement policy
+	private LinkedList<Integer> emptyFrameIndex; 			// CS4432-Project1: An arraylist that keeps indices of all empty frames
+	private Hashtable<Integer, Integer> blockIndexTable; 	// CS4432-Project1: An hashtable that keeps current blocks number and its corresponding frame in the pool
+	private Policy policy;									// CS4432-Project1: The buffer replacement policy
 
 	/**
 	 * CS4432-Project1: Creates a buffer manager having the specified number of
@@ -39,25 +38,30 @@ class BasicBufferMgr {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
 		policy = Policy.LRU;
-		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
-		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
+		emptyFrameIndex = new LinkedList<Integer>();
+		blockIndexTable = new Hashtable<Integer, Integer>();
 
 		for (int i = 0; i < numbuffs; i++) {
 			bufferpool[i] = new Buffer(i);
-			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
+			emptyFrameIndex.add(i);				// CS4432-Project1: initialize the emptyFrameIndex
 		}
 	}
 
+	/**
+	 * CS4432-Project1: the BasicBufferMgr constructor with policy as input variable
+	 * @param numbuffs
+	 * @param policy LRU or CLOCK
+	 */
 	BasicBufferMgr(int numbuffs, Policy policy) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
 		this.policy = policy;
-		emptyFrameIndex = new LinkedList<Integer>();		// CS4432-Project1: XXX for YYY TODO
-		blockIndexTable = new Hashtable<Integer, Integer>();	// CS4432-Project1: XXX for YYY TODO
+		emptyFrameIndex = new LinkedList<Integer>();
+		blockIndexTable = new Hashtable<Integer, Integer>();
 
 		for (int i = 0; i < numbuffs; i++) {
 			bufferpool[i] = new Buffer(i);
-			emptyFrameIndex.add(i);		// CS4432-Project1: initialize the emptyFrameIndex
+			emptyFrameIndex.add(i);				// CS4432-Project1: initialize the emptyFrameIndex
 		}
 	}
 
@@ -84,9 +88,6 @@ class BasicBufferMgr {
 	 * @return the pinned buffer
 	 */
 	synchronized Buffer pin(Block blk) {
-
-		//		System.out.println("*-*pin");	//TODO testing
-
 		Buffer buff = findExistingBuffer(blk);
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
@@ -114,9 +115,6 @@ class BasicBufferMgr {
 	 * @return the pinned buffer
 	 */
 	synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
-
-		//		System.out.println("*-*pinNew");	//TODO testing
-
 		Buffer buff = chooseUnpinnedBuffer();
 		if (buff == null)
 			return null;
@@ -150,15 +148,11 @@ class BasicBufferMgr {
 
 
 	/**
-	 * CS4432-Project1: Efficient search for a given disk block by using hashtable
+	 * CS4432-Project1: Efficient search for a given disk block by using hashMap
 	 * @param blk
 	 * @return
 	 */
 	private Buffer findExistingBuffer(Block blk) {
-
-		//		System.out.println("\nIN findExistingBuffer");
-		//		System.out.println("blockIndexTable.keySet(): " + blockIndexTable.keySet());
-
 		Integer bufferIndex = blockIndexTable.get(blk.hashCode());
 		if (bufferIndex != null) {			
 			return bufferpool[bufferIndex];
@@ -167,7 +161,7 @@ class BasicBufferMgr {
 	}
 
 	/**
-	 * CS4432-Project1: TODO
+	 * CS4432-Project1: choose unpinned buffer with priority as the following: existing buffer > empty buffer > replacing buffer
 	 * @return
 	 */
 	private Buffer chooseUnpinnedBuffer() {
@@ -207,7 +201,24 @@ class BasicBufferMgr {
 		return null;
 	}
 
+	/**
+	 * CS4432-Project1: get the list of buffers (id, logSequenceNumber)
+	 * @return
+	 */
+	public List<String> get_list_buffers_ids_loqSeqNum() {
+		List<String> list_buffer_ids = new ArrayList<String>();
+		for(int i = 0; i < bufferpool.length; i++) {
+			list_buffer_ids.add(bufferpool[i].getBufferID() + "," + bufferpool[i].getLogSequenceNumber() );
+		}
+		return list_buffer_ids;
+	}
 
+
+	/**
+	 * CS4432-Project1: get the list of buffers (id, logSequenceNumber) under LRU replacement policy,
+	 * which means the list is sorted upon logSequenceNumber (TimeStamp)
+	 * @return
+	 */
 	public List<String> get_list_buffes_by_LRU() {
 		List<String> list_buffer_ids = new ArrayList<String>();
 
@@ -219,9 +230,6 @@ class BasicBufferMgr {
 		int j = 0;
 		for(int i = 1; i < list_buffer_ids.size(); i++) {
 			j = i;
-
-			//			System.out.println();	// TODO testing
-
 			while( j > 0 && Integer.parseInt(list_buffer_ids.get(j-1).split(",")[1]) > Integer.parseInt(list_buffer_ids.get(j).split(",")[1]) ) {
 				String tmp_buffer_id = list_buffer_ids.get(j-1);
 				list_buffer_ids.set(j -1, list_buffer_ids.get(j));
@@ -233,12 +241,6 @@ class BasicBufferMgr {
 		return list_buffer_ids;
 	}
 
-	public List<String> get_list_buffers_ids_loqSeqNum() {
-		List<String> list_buffer_ids = new ArrayList<String>();
-		for(int i = 0; i < bufferpool.length; i++) {
-			list_buffer_ids.add(bufferpool[i].getBufferID() + "," + bufferpool[i].getLogSequenceNumber() );
-		}
-		return list_buffer_ids;
-	}
+
 
 }

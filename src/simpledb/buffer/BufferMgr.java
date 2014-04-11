@@ -139,16 +139,25 @@ public class BufferMgr {
 	}
 
 	/**
+	 * CS4432-Project1: get bufferMgr
 	 * @return the bufferMgr
 	 */
 	public BasicBufferMgr getBufferMgr() {
 		return bufferMgr;
 	}
 
+	/**
+	 * CS4432-Project1: get list of buffers under LRU policy, which means the list is sorted by logSequenceNumber(TimeStamp)
+	 * @return
+	 */
 	public List<String> get_list_buffers_by_LRU() {
 		return this.getBufferMgr().get_list_buffes_by_LRU();		
 	}
 	
+	/**
+	 * CS4432-Project1: get list of buffers
+	 * @return
+	 */
 	public List<String> get_list_buffers_ids_loqSeqNum() {
 		return this.getBufferMgr().get_list_buffers_ids_loqSeqNum();
 	}

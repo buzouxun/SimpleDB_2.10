@@ -18,10 +18,15 @@ public class TestTask2_3_LRU {
 		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/fldcat.tbl");
 		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/tblcat.tbl");
 		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/simpledb.log");
+		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/computers.tbl");
 	}
 
 	@Test
 	public void test_LRU() {
+
+		// description to be printed
+		String printout = "\n";
+
 		// analogous to the driver
 		SimpleDB.init("studentdb");
 
@@ -44,40 +49,40 @@ public class TestTask2_3_LRU {
 
 		// get a list of sorted buffers by logSequenceNumber
 		List<String> buffer_ids = SimpleDB.bufferMgr().get_list_buffers_by_LRU();
-		
+
 		// start to record which buffer(s) is selected by LRU
 		SimpleDB.myMetaData.LRUBufferIdLogCleanUp();
-		
-		// create students table
+
+		// create computer table
 		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_computers(), SimpleDB.planner());
-		
+
 		// confirm buffers selected by LRU MUST have oldest time stamp
 		for(int i = 0; i < SimpleDB.myMetaData.LRUBufferIdLogs.size(); i++) {
 			assertEquals( ((int)Integer.parseInt(buffer_ids.get(i).split(",")[0])), ((int)SimpleDB.myMetaData.LRUBufferIdLogs.get(i)) );
 		}
 
-		
+
 		// print list buffers (id, logSequenceNumber)
-		String printout = "\n*** List of buffers (id, logSequenceNumber) ***\n";
+		printout += "\n*** List of buffers (id, logSequenceNumber) ***\n";
 		for( int i = 0; i < SimpleDB.bufferMgr().get_list_buffers_ids_loqSeqNum().size(); i++) {
 			printout += "id: " + SimpleDB.bufferMgr().get_list_buffers_ids_loqSeqNum().get(i).split(",")[0] 
 					+ "\tlogSeqNum: " + SimpleDB.bufferMgr().get_list_buffers_ids_loqSeqNum().get(i).split(",")[1] + "\n";
 		}
-		
+
 		// print list buffers sorted by logSequenceNumber
 		printout += "\n*** List of buffers (id, logSequenceNumber) sorted by logSeqNum ***\n";
 		for( int i = 0; i < buffer_ids.size(); i++) {
 			printout += "id: " + buffer_ids.get(i).split(",")[0] 
 					+ "\tlogSeqNum: " + buffer_ids.get(i).split(",")[1] + "\n";
 		}
-		
+
 		// print buffers selected by LRU while creating computer table
 		printout += "\n*** List of buffers (id, logSequenceNumber) selected by LRU after creating new table ***\n";
 		for(int i = 0; i < SimpleDB.myMetaData.LRUBufferIdLogs.size(); i++) {
 			printout += "id: " + SimpleDB.myMetaData.LRUBufferIdLogs.get(i) + "\n";
 		}
-		
+
 		System.out.println(printout);
-		
+
 	}
 }

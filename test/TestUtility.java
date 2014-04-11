@@ -1,17 +1,19 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
 import simpledb.planner.Planner;
 import simpledb.query.Plan;
 import simpledb.tx.Transaction;
 
+
+/**
+ * cs4432-Project1: Test Utility function class
+ * 
+ * @author jzhu
+ *
+ */
 public class TestUtility {
 
 	/**
@@ -36,6 +38,11 @@ public class TestUtility {
 		return students_tbl;
 	}
 
+	
+	/**
+	 * get values/records to be inserted into students table
+	 * @return
+	 */
 	@SuppressWarnings("resource")
 	public static List<String> get_values_persons() {
 		List<String> students_values = new ArrayList<String>();
@@ -54,6 +61,11 @@ public class TestUtility {
 		return students_values;
 	}
 	
+	
+	/**
+	 * select names from students relational table
+	 * @return
+	 */
 	@SuppressWarnings("resource")
 	public static String get_select_name_of_students() {
 		String query = "";
@@ -72,14 +84,28 @@ public class TestUtility {
 		return query;
 	}
 
-	public static int exec_crt_tbl(String crt_tbl_persons, Planner planner) {
+	
+	/**
+	 * execute the create table statements
+	 * @param crt_tbl
+	 * @param planner
+	 * @return
+	 */
+	public static int exec_crt_tbl(String crt_tbl, Planner planner) {
 		int numRecs = 0;
 		Transaction tx = new Transaction();
-		numRecs = planner.executeUpdate(crt_tbl_persons, tx);
+		numRecs = planner.executeUpdate(crt_tbl, tx);
 		tx.commit();
 		return numRecs;
 	}
 
+	
+	/**
+	 * execute the insert statement
+	 * @param students_values
+	 * @param planner
+	 * @return
+	 */
 	public static int exec_insert_values(List<String> students_values, Planner planner) {
 		int sumRecs = 0;
 		Transaction tx = null;
@@ -91,6 +117,13 @@ public class TestUtility {
 		return sumRecs;
 	}
 	
+	
+	/**
+	 * execute select statements
+	 * @param query
+	 * @param planner
+	 * @return
+	 */
 	public static Plan exec_select(String query, Planner planner) {
 		Transaction tx = new Transaction();
 		Plan p = planner.createQueryPlan(query, tx);
@@ -98,6 +131,7 @@ public class TestUtility {
 		return p;
 	}
 
+	
 	/**
 	 * create table of students.sql
 	 * @return
@@ -128,13 +162,10 @@ public class TestUtility {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * delete the existing tables for testing purpose
+	 * @param file
+	 */
 	public static void JavaDeleteFile(String file) {
 		try
 		{
