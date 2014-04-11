@@ -31,6 +31,8 @@ public class TestTask2_2 {
 
 	@Test
 	public void test_find_existing_buffers_while_running_same_query() {
+		
+		String printout = "\n";
 
 		// analogous to the driver
 		SimpleDB.init("studentdb");
@@ -40,8 +42,8 @@ public class TestTask2_2 {
 		// initialize a new buffer manager which has 10 empty buffers indexing from 0 to 11
 		int size_of_mt_buffers = 10;
 		SimpleDB.setBm(new BufferMgr(size_of_mt_buffers));
-		// clean up SimpleDB.myMetaData
 		SimpleDB.myMetaData.cleanUp();
+		printout += "Initialize a new buffer manager which has 10 empty buffers indexing from 0 to 9, waiting for querying later\n\n";
 
 		// insert 2 student records for querying later
 		List<String> recs = TestUtility.get_values_persons();
@@ -51,12 +53,17 @@ public class TestTask2_2 {
 		Plan p1 = TestUtility.exec_select(TestUtility.get_select_name_of_students(), SimpleDB.planner());
 		String p1_result = concat_results(p1);
 		int p1_last_occupied_mt_buffer_index = SimpleDB.myMetaData.getLastUsedMtFrmIndex();
+		printout += "After running Query 1, the last occupied empty buffer id: " + p1_last_occupied_mt_buffer_index + 
+				"\nIn other words, there are still some empty buffers left." + "\n\n";
 
 
 		// Query 2: select the same column values from student records again
 		Plan p2 = TestUtility.exec_select(TestUtility.get_select_name_of_students(), SimpleDB.planner());
 		String p2_result = concat_results(p2);
 		int p2_last_occupied_mt_buffer_index = SimpleDB.myMetaData.getLastUsedMtFrmIndex();
+		printout += "Query 2 is as the same as Query 1, so it will not require any new buffer while running Query 2"
+				+ "\nAfter running Query 2, the last occupied empty buffer id: " + p2_last_occupied_mt_buffer_index
+				+ ".\nIn other words, running Query 2 only needs to use existing buffers.";
 
 
 		// compare the results from the two selection statements (Query 1 and Query 2) above, which should be the same
@@ -70,7 +77,7 @@ public class TestTask2_2 {
 		assertEquals(p1_last_occupied_mt_buffer_index, p2_last_occupied_mt_buffer_index);
 		
 		// print buffers /  toString()
-
+		System.out.println(printout);
 	}
 
 	private String concat_results(Plan p1) {
