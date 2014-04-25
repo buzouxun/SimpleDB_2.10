@@ -5,12 +5,7 @@ package simpledb.parse;
  * @author Edward Sciore
  */
 public class CreateIndexData {
-   private String idxname, tblname, fldname;
-   private IndexType type;
-   
-   public enum IndexType {
-	   SH,BT,EH;
-   }
+   private String idxname, tblname, fldname, type;
    
    /**
     * Saves the table and field names of the specified index.
@@ -20,14 +15,8 @@ public class CreateIndexData {
       this.tblname = tblname;
       this.fldname = fldname;
       
-      if (type.equals("sh")) {
-    	  this.type = IndexType.SH;
-      }
-      else if (type.equals("bt")) {
-    	  this.type = IndexType.BT;
-      }
-      else if (type.equals("eh")) {
-    	  this.type = IndexType.EH;
+      if (type.equals("sh") || type.equals("bt") || type.equals("eh")) {
+    	  this.type = type;
       }
       else throw new BadSyntaxException();
    }
@@ -60,7 +49,7 @@ public class CreateIndexData {
     * Returns the type of the index
     * @return the type of the index
     */
-   public IndexType type() {
+   public String type() {
 	   return type;
    }
 }
