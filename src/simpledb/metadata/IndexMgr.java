@@ -48,7 +48,7 @@ public class IndexMgr {
       rf.setString("indexname", idxname);
       rf.setString("tablename", tblname);
       rf.setString("fieldname", fldname);
-      rf.setString("indextype", type);
+      rf.setString("type", type);
       rf.close();
    }
    
@@ -67,10 +67,6 @@ public class IndexMgr {
          String idxname = rf.getString("indexname");
          String fldname = rf.getString("fieldname");
          String type = rf.getString("type");
-         if (type == null) {
-        	 System.out.println("NULLLLLLLLLLL");
-         }
-         else System.out.println("EXISTTTTTTTTT");
          IndexInfo ii = new IndexInfo(idxname, tblname, fldname, type, tx);
          result.put(fldname, ii);
       }

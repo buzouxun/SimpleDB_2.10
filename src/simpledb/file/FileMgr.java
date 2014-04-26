@@ -40,9 +40,6 @@ public class FileMgr {
       dbDirectory = new File(homedir, dbname);
       isNew = !dbDirectory.exists();
 
-      System.out.println("\ndbDirectory " + dbDirectory + "\n");
-      System.out.println("\nisNew= " + isNew + "\n");
-      
       // create the directory if the database is new
       if (isNew && !dbDirectory.mkdir())
          throw new RuntimeException("cannot create " + dbname);
