@@ -37,7 +37,7 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
-		policy = Policy.CLOCK;
+		policy = Policy.LRU;
 		emptyFrameIndex = new LinkedList<Integer>();
 		blockIndexTable = new Hashtable<Integer, Integer>();
 
