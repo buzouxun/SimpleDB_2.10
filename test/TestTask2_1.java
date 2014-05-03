@@ -49,11 +49,15 @@ public class TestTask2_1 {
 
 		// the first insertions of 6 records will not take all empty buffers, since the size of relational data is not big enough
 		List<String> recs = TestUtility.get_values_persons();
-		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
+		
+		recs.add("delete from students where StudentID=4");
+		
+		TestUtility.exec_insert_values(recs.subList(0, 4), SimpleDB.planner());
+		TestUtility.exec_insert_values(recs.subList(6, 7), SimpleDB.planner());
 		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 		printout += "After inserting 6 records, the last occupied empty buffer id: " + SimpleDB.myMetaData.getLastUsedMtFrmIndex() + "\n" 
 				+ "In other words, buffer 0 ~ 7 have been occupied. \n\n";
-		
+/*
 		// after incrementally inserting another 6 records, the size of relational data is big enough to take all empty blocks
 		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
 		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() == (size_of_mt_buffers - 1) );
@@ -61,6 +65,7 @@ public class TestTask2_1 {
 				+ "In other words, all empty buffers have been occupied.\n";
 	
 		System.out.println(printout);
+*/
 	}
 	
 	
