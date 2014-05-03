@@ -17,6 +17,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class SecondHashIndex implements Index {
+	public static int NUM_BUCKETS = 2;
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -47,7 +48,7 @@ public class SecondHashIndex implements Index {
 	public void beforeFirst(Constant searchkey) {
 		close();
 		this.searchkey = searchkey;
-		int bucket = 0;
+		int bucket = searchkey.hashCode() % NUM_BUCKETS;
 		String tblname = idxname + bucket;
 		TableInfo ti = new TableInfo(tblname, sch);
 		
