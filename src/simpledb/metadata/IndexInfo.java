@@ -52,12 +52,12 @@ public class IndexInfo {
       Schema sch = schema();
       
       // Create new HashIndex for hash indexing
-      if (type == "bh") {
+      if (type.equals("sh")) {
     	  return new HashIndex(idxname, sch, tx);
       }
       
       // Create new HashIndex for B-Tree indexing
-      else if (type == "bt") {
+      else if (type.equals("sh")) {
     	  return new BTreeIndex(idxname, sch, tx);
       }
       
