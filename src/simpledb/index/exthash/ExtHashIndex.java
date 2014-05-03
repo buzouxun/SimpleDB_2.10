@@ -26,7 +26,8 @@ public class ExtHashIndex implements Index {
 	 */
 	public ExtHashIndex(String idxname, Schema sch, Transaction tx) {
 		String name = "internal" + idxname;
-		new SecondHashIndex(name, sch, tx);
+//		index = new SecondHashIndex(name, sch, tx);
+		index = new SecondHashIndex(idxname, sch, tx);
 	}
 
 	/**
@@ -97,13 +98,16 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
+		
+		System.out.println("delete() is called");	//TODO delete
+		
 		/*beforeFirst(val);
 		while(next())
 			if (getDataRid().equals(rid)) {
 				ts.delete();
 				return;
 			}*/
-		index.delete(val, rid);
+		index.delete(val, rid);	
 	}
 
 	/**

@@ -63,6 +63,9 @@ public class SecondHashIndex implements Index {
 	 */
 	public boolean next() {
 		while (ts.next())
+			
+			System.out.println("ts.getVal('dataval') = " + ts.getVal("dataval"));	//TODO delete
+			
 			if (ts.getVal("dataval").equals(searchkey))
 				return true;
 		return false;
