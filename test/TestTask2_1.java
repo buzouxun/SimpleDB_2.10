@@ -39,7 +39,7 @@ public class TestTask2_1 {
 		// create students table
 		TestUtility.exec_crt_tbl(TestUtility.get_crt_tbl_students(), SimpleDB.planner());
 		
-		TestUtility.exec_crt_tbl("create sh index index1 on students (StudentID)", SimpleDB.planner());
+		TestUtility.exec_crt_tbl("create eh index index1 on students (StudentID)", SimpleDB.planner());
 
 		// initialize a new buffer manager which has 12 empty buffers indexing from 0 to 11
 		int size_of_mt_buffers = 12;
