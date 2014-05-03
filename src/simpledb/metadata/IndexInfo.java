@@ -6,6 +6,7 @@ import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.index.Index;
+import simpledb.index.exthash.ExtHashIndex;
 import simpledb.index.hash.HashIndex; 
 import simpledb.index.btree.BTreeIndex; //in case we change to btree indexing
 
@@ -61,7 +62,7 @@ public class IndexInfo {
       }
       
       // Create new HashIndex for extensible hash indexing
-      return new HashIndex(idxname, sch, tx);
+      return new ExtHashIndex(idxname, sch, tx);
    }
    
    /**
