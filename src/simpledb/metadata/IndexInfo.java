@@ -42,12 +42,25 @@ public class IndexInfo {
    }
    
    /**
+    * CS4432 Project2 Edited
+    * 
     * Opens the index described by this object.
     * @return the Index object associated with this information
     */
    public Index open() {
       Schema sch = schema();
+      
       // Create new HashIndex for hash indexing
+      if (type == "bh") {
+    	  return new HashIndex(idxname, sch, tx);
+      }
+      
+      // Create new HashIndex for B-Tree indexing
+      else if (type == "bt") {
+    	  return new BTreeIndex(idxname, sch, tx);
+      }
+      
+      // Create new HashIndex for extensible hash indexing
       return new HashIndex(idxname, sch, tx);
    }
    
