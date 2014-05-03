@@ -16,6 +16,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
+	
 	private SecondHashIndex index;
 	
 	/**
@@ -26,7 +27,6 @@ public class ExtHashIndex implements Index {
 	 */
 	public ExtHashIndex(String idxname, Schema sch, Transaction tx) {
 		String name = "internal" + idxname;
-//		index = new SecondHashIndex(name, sch, tx);
 		index = new SecondHashIndex(idxname, sch, tx);
 	}
 
@@ -40,13 +40,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
-	/*	close();
-		this.searchkey = searchkey;
-		int bucket = 0;
-		String tblname = idxname + bucket;
-		TableInfo ti = new TableInfo(tblname, sch);
-		
-		ts = new TableScan(ti, tx);*/
 		index.beforeFirst(searchkey);
 	}
 
@@ -58,10 +51,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#next()
 	 */
 	public boolean next() {
-		/*while (ts.next())
-			if (ts.getVal("dataval").equals(searchkey))
-				return true;
-		return false;*/
 		return index.next();
 	}
 
@@ -71,9 +60,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#getDataRid()
 	 */
 	public RID getDataRid() {
-		/*int blknum = ts.getInt("block");
-		int id = ts.getInt("id");
-		return new RID(blknum, id);*/
 		return index.getDataRid();
 	}
 
@@ -82,11 +68,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
-		/*beforeFirst(val);
-		ts.insert();
-		ts.setInt("block", rid.blockNumber());
-		ts.setInt("id", rid.id());
-		ts.setVal("dataval", val);*/
 		index.insert(val, rid);
 	}
 
@@ -98,15 +79,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
-		
-		System.out.println("delete() is called");	//TODO delete
-		
-		/*beforeFirst(val);
-		while(next())
-			if (getDataRid().equals(rid)) {
-				ts.delete();
-				return;
-			}*/
 		index.delete(val, rid);	
 	}
 
@@ -115,8 +87,6 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#close()
 	 */
 	public void close() {
-		/*if (ts != null)
-			ts.close();*/
 		index.close();
 	}
 

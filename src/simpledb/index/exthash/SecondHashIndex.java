@@ -63,12 +63,13 @@ public class SecondHashIndex implements Index {
 	 * @see simpledb.index.Index#next()
 	 */
 	public boolean next() {
-		while (ts.next())
+		while (ts.next()) {
 			
 			System.out.println("ts.getVal('dataval') = " + ts.getVal("dataval"));	//TODO delete
 			
 			if (ts.getVal("dataval").equals(searchkey))
 				return true;
+		}
 		return false;
 	}
 
