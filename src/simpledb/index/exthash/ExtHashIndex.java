@@ -55,6 +55,8 @@ public class ExtHashIndex implements Index {
 		int divisor = (int) Math.pow(2, globalDepth);
 		int bucket = hashCode % divisor;
 		
+		System.out.println("bucket: " + bucket);
+		
 		String tblname = "directory" + idxname + bucket;
 		TableInfo ti = new TableInfo(tblname, sch);
 		ts = new TableScan(ti, tx);
