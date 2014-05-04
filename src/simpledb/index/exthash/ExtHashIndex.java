@@ -57,7 +57,7 @@ public class ExtHashIndex implements Index {
 		
 		String tblname = "directory" + idxname + bucket;
 		TableInfo ti = new TableInfo(tblname, sch);
-		TableScan ts = new TableScan(ti, tx);
+		ts = new TableScan(ti, tx);
 		
 		index.beforeFirst(searchkey, bucket);
 	}
@@ -102,6 +102,7 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
+		beforeFirst(val);
 		index.delete(val, rid);	
 	}
 

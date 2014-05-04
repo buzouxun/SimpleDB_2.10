@@ -112,7 +112,6 @@ public class SecondHashIndex implements Index {
 	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
-		beforeFirst(val);
 		while(next())
 			if (getDataRid().equals(rid)) {
 				ts.delete();
