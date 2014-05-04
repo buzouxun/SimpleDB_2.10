@@ -56,7 +56,7 @@ public class TestTask2_1 {
 		recs.add("delete from students where StudentID=2");
 		
 		TestUtility.exec_insert_values(recs.subList(0, 4), SimpleDB.planner());
-//		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
+		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
 //		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 //		printout += "After inserting 6 records, the last occupied empty buffer id: " + SimpleDB.myMetaData.getLastUsedMtFrmIndex() + "\n" 
 //				+ "In other words, buffer 0 ~ 7 have been occupied. \n\n";

@@ -1,3 +1,9 @@
+/**
+ * add local despth, while in middle of process
+ * store global depth.
+ * split existed buckets
+ * then check if need to increase global depth
+ */
 package simpledb.index.exthash;
 
 import simpledb.index.Index;
@@ -21,6 +27,8 @@ public class ExtHashIndex implements Index {
 	private Transaction tx;
 	private SecondHashIndex index;
 	private int globalDepth;
+	private Schema mySch = null;
+	private boolean insertion = true;
 	
 	private Constant searchkey = null;
 	private TableScan ts = null;
@@ -37,6 +45,8 @@ public class ExtHashIndex implements Index {
 		this.tx = tx;
 		index = new SecondHashIndex(idxname, sch, tx);
 		globalDepth = 1;
+		
+		mySch.addIntField("LocalDepth");
 	}
 
 	/**
@@ -57,11 +67,22 @@ public class ExtHashIndex implements Index {
 		
 		System.out.println("bucket: " + bucket);
 		
+		// Check if the bucket if full
+		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= 2;
+		if (full && insertion) {
+			// split existed records
+			
+			
+			// check if incresase global index
+		}
+		
 		String tblname = "directory" + idxname + bucket;
 		TableInfo ti = new TableInfo(tblname, sch);
 		ts = new TableScan(ti, tx);
 		
 		index.beforeFirst(searchkey, bucket);
+		System.out.println("bucket = " + bucket);
+		System.out.println("number = " + index.getNumberOfRecordsPerTableScan(bucket));
 	}
 
 	/**
@@ -92,6 +113,10 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
+		insertion = true;
+		if (ts.getVal("LocalDepth") == null) {
+			ts.setInt("LocalDepth", 1);
+		}
 		beforeFirst(val);
 		index.insert(val, rid);
 	}
@@ -104,6 +129,7 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
+		insertion = false;
 		beforeFirst(val);
 		index.delete(val, rid);	
 	}

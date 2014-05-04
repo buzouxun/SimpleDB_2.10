@@ -83,7 +83,7 @@ public class HashIndex implements Index {
 		ts.insert();
 		ts.setInt("block", rid.blockNumber());
 		ts.setInt("id", rid.id());
-		ts.setVal("dataval", val);
+		ts.setVal("dataval", val); 
 	}
 
 	/**
