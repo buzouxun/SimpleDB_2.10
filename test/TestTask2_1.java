@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import simpledb.buffer.BufferMgr;
+import simpledb.query.Plan;
+import simpledb.query.Scan;
 import simpledb.server.SimpleDB;
 
 
@@ -54,10 +56,17 @@ public class TestTask2_1 {
 		recs.add("delete from students where StudentID=2");
 		
 		TestUtility.exec_insert_values(recs.subList(0, 4), SimpleDB.planner());
-		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
-		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
-		printout += "After inserting 6 records, the last occupied empty buffer id: " + SimpleDB.myMetaData.getLastUsedMtFrmIndex() + "\n" 
-				+ "In other words, buffer 0 ~ 7 have been occupied. \n\n";
+//		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
+//		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
+//		printout += "After inserting 6 records, the last occupied empty buffer id: " + SimpleDB.myMetaData.getLastUsedMtFrmIndex() + "\n" 
+//				+ "In other words, buffer 0 ~ 7 have been occupied. \n\n";
+		
+		// Query 1: select one column values from student records
+		Plan p1 = TestUtility.exec_select(TestUtility.get_select_name_of_students(), SimpleDB.planner());
+		String p1_result = concat_results(p1);
+		System.out.println(p1_result);
+		
+		
 /*
 		// after incrementally inserting another 6 records, the size of relational data is big enough to take all empty blocks
 		TestUtility.exec_insert_values(recs.subList(0, 6), SimpleDB.planner());
@@ -70,5 +79,15 @@ public class TestTask2_1 {
 	}
 	
 	
+	private String concat_results(Plan p1) {
+		String results = "";
+		Scan s = p1.open();
+		while (s.next()) {
+			String name = s.getString("name");
+			results += name;
+		}
+		s.close();
+		return results;
+	}
 
 }
