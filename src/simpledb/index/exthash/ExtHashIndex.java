@@ -16,8 +16,14 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
-	
+	private String idxname;
+	private Schema sch;
+	private Transaction tx;
 	private SecondHashIndex index;
+	private int globalDepth;
+	
+	private Constant searchkey = null;
+	private TableScan ts = null;
 	
 	/**
 	 * Opens a extensible hash index for the specified index.
@@ -26,8 +32,11 @@ public class ExtHashIndex implements Index {
 	 * @param tx the calling transaction
 	 */
 	public ExtHashIndex(String idxname, Schema sch, Transaction tx) {
-		String name = "internal" + idxname;
+		this.idxname = idxname;
+		this.sch = sch;
+		this.tx = tx;
 		index = new SecondHashIndex(idxname, sch, tx);
+		globalDepth = 1;
 	}
 
 	/**
@@ -40,7 +49,17 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
-		index.beforeFirst(searchkey);
+		close();	// TODO new close func
+		this.searchkey = searchkey;
+		int hashCode = searchkey.hashCode();
+		int divisor = (int) Math.pow(2, globalDepth);
+		int bucket = hashCode % divisor;
+		
+		String tblname = "directory" + idxname + bucket;
+		TableInfo ti = new TableInfo(tblname, sch);
+		TableScan ts = new TableScan(ti, tx);
+		
+		index.beforeFirst(searchkey, bucket);
 	}
 
 	/**
@@ -51,7 +70,10 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#next()
 	 */
 	public boolean next() {
-		return index.next();
+		while (ts.next())
+			if (ts.getVal("dataval").equals(searchkey))
+				return true;
+		return false;
 	}
 
 	/**
@@ -68,6 +90,7 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
+		beforeFirst(val);
 		index.insert(val, rid);
 	}
 
@@ -87,7 +110,8 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#close()
 	 */
 	public void close() {
-		index.close();
+		if (ts != null)
+			ts.close();
 	}
 
 	/**

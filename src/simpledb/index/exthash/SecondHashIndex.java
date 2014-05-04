@@ -17,7 +17,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class SecondHashIndex implements Index {
-	public static int NUM_BUCKETS = 2;
+	public static int BUCKET_SIZE = 2;
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -48,10 +48,18 @@ public class SecondHashIndex implements Index {
 	public void beforeFirst(Constant searchkey) {
 		close();
 		this.searchkey = searchkey;
-		int bucket = searchkey.hashCode() % NUM_BUCKETS;
+		int bucket = searchkey.hashCode() % 2;
 		String tblname = idxname + bucket;
 		TableInfo ti = new TableInfo(tblname, sch);
 		
+		ts = new TableScan(ti, tx);
+	}
+	
+	public void beforeFirst(Constant searchkey, int key) {
+		close();
+		this.searchkey = searchkey;
+		String tblname = idxname + key;
+		TableInfo ti = new TableInfo(tblname, sch);
 		ts = new TableScan(ti, tx);
 	}
 
@@ -89,7 +97,7 @@ public class SecondHashIndex implements Index {
 	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
-		beforeFirst(val);
+		//beforeFirst(val);
 		ts.insert();
 		ts.setInt("block", rid.blockNumber());
 		ts.setInt("id", rid.id());

@@ -42,7 +42,7 @@ public class TestTask2_1 {
 		TestUtility.exec_crt_tbl("create eh index index1 on students (StudentID)", SimpleDB.planner());
 
 		// initialize a new buffer manager which has 12 empty buffers indexing from 0 to 11
-		int size_of_mt_buffers = 12;
+		int size_of_mt_buffers = 13;
 		SimpleDB.setBm(new BufferMgr(size_of_mt_buffers) );
 		SimpleDB.myMetaData.cleanUp();
 		printout += "new buffer manager initilized 12 empty buffers, index from 0 to 11, waiting for inserting values\n\n";
