@@ -1,5 +1,7 @@
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Before;
@@ -24,10 +26,16 @@ public class TestTask2_1 {
 	@Before
 	public void delete_students_tbl() {
 		String user_home_path = System.getProperty("user.home").replace("\\", "/");
-		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/students.tbl");
-		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/fldcat.tbl");
-		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/tblcat.tbl");
-		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/simpledb.log");
+//		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/students.tbl");
+//		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/fldcat.tbl");
+//		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/tblcat.tbl");
+//		TestUtility.JavaDeleteFile(user_home_path + "/studentdb/simpledb.log");
+		String directory_path = user_home_path + "/studentdb";
+		try {
+			TestUtility.delete(new File(directory_path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -56,7 +64,8 @@ public class TestTask2_1 {
 		recs.add("delete from students where StudentID=2");
 		
 		TestUtility.exec_insert_values(recs.subList(0, 4), SimpleDB.planner());
-		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
+//		TestUtility.exec_insert_values(recs.subList(6, 8), SimpleDB.planner());
+		
 //		assertEquals(true, SimpleDB.myMetaData.getLastUsedMtFrmIndex() < (size_of_mt_buffers - 1) );
 //		printout += "After inserting 6 records, the last occupied empty buffer id: " + SimpleDB.myMetaData.getLastUsedMtFrmIndex() + "\n" 
 //				+ "In other words, buffer 0 ~ 7 have been occupied. \n\n";
