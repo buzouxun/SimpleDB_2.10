@@ -159,4 +159,8 @@ public class SecondHashIndex implements Index {
 		return n;
 	}
 	
+	public TableScan getTs() {
+		return ts;
+	}
+	
 }

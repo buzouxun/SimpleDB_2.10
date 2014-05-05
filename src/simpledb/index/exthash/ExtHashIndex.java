@@ -6,6 +6,10 @@
  */
 package simpledb.index.exthash;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import simpledb.index.Index;
 import simpledb.index.hash.HashIndex;
 import simpledb.query.Constant;
@@ -26,8 +30,8 @@ public class ExtHashIndex implements Index {
 	private Schema sch;
 	private Transaction tx;
 	private SecondHashIndex index;
-	private int globalDepth;
-	private Schema mySch = null;
+	//private int globalDepth;
+	private Schema mySch = new Schema();
 	private boolean insertion = true;
 	
 	private Constant searchkey = null;
@@ -43,9 +47,11 @@ public class ExtHashIndex implements Index {
 		this.idxname = idxname;
 		this.sch = sch;
 		this.tx = tx;
+		String secondIndexName = idxname + 0;
 		index = new SecondHashIndex(idxname, sch, tx);
-		globalDepth = 1;
+		//globalDepth = 1;
 		
+		mySch.addIntField("Bucket");
 		mySch.addIntField("LocalDepth");
 	}
 
@@ -62,7 +68,7 @@ public class ExtHashIndex implements Index {
 		close();	// TODO new close func?
 		this.searchkey = searchkey;
 		int hashCode = searchkey.hashCode();
-		int divisor = (int) Math.pow(2, globalDepth);
+		int divisor = (int) Math.pow(2, getGlobalDepth());
 		int bucket = hashCode % divisor;
 		
 		System.out.println("bucket: " + bucket);
@@ -87,13 +93,39 @@ public class ExtHashIndex implements Index {
 	}
 	
 	private void split(int bucket) {
-		int key = bucket + (int) Math.pow(2, globalDepth - 1);
-		/*String newTableName = idxname + key;
+		int key = bucket + (int) Math.pow(2, getGlobalDepth() - 1);
+		String newTableName = idxname + key;
 		TableInfo newTi = new TableInfo(newTableName, sch);
-		TableScan newTs = new TableScan(newTi, tx);*/
-		SecondHashIndex newIndex = new SecondHashIndex(idxname, sch, tx);
+		TableScan newTs = new TableScan(newTi, tx);
 		
+		/*SecondHashIndex newIndex = new SecondHashIndex(idxname, sch, tx);
+		rearrange(newIndex, newKey);
 	}
+	
+	private void rearrange(SecondHashIndex newIndex, int newKey) {
+		List<RID> tempRID = new ArrayList<RID>();
+		List<Constant> tempVal = new ArrayList<Constant>();
+		int counter = 1;
+		
+		RID rid = index.getDataRid();
+		Constant val = index.getTs().getVal("dataval");
+		tempRID.add(rid);
+		tempVal.add(val);
+		index.delete(val, rid);
+		
+		while(index.next()) {
+			rid = index.getDataRid();
+			val = index.getTs().getVal("dataval");
+			tempRID.add(rid);
+			tempVal.add(val);
+			index.delete(val, rid);
+			counter++;
+		}
+		
+		for (int i = 0; i < counter; i++) {
+			
+		}
+	}*/
 
 	/**
 	 * Moves to the next record having the search key.
@@ -124,8 +156,11 @@ public class ExtHashIndex implements Index {
 	 */
 	public void insert(Constant val, RID rid) {
 		insertion = true;
-		if (ts.getVal("LocalDepth") == null) {
+		
+		// TS is null
+		if (ts == null) {
 			ts.setInt("LocalDepth", 1);
+			ts.setInt("Bucket", 0);
 		}
 		beforeFirst(val);
 		index.insert(val, rid);
