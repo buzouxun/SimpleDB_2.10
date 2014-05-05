@@ -6,6 +6,9 @@
  */
 package simpledb.index.exthash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.index.Index;
 import simpledb.index.hash.HashIndex;
 import simpledb.query.Constant;
@@ -26,8 +29,8 @@ public class ExtHashIndex implements Index {
 	private Schema sch;
 	private Transaction tx;
 	private SecondHashIndex index;
-	private int globalDepth;
-	private Schema mySch = null;
+	//private int globalDepth;
+	private Schema mySch = new Schema();
 	private boolean insertion = true;
 	
 	private Constant searchkey = null;
@@ -43,9 +46,11 @@ public class ExtHashIndex implements Index {
 		this.idxname = idxname;
 		this.sch = sch;
 		this.tx = tx;
-		index = new SecondHashIndex(idxname, sch, tx);
-		globalDepth = 1;
+		String secondIndexName = idxname + 0;
+		index = new SecondHashIndex(secondIndexName, sch, tx);
+		//globalDepth = 1;
 		
+		mySch.addIntField("ExtHashIndex");
 		mySch.addIntField("LocalDepth");
 	}
 
@@ -62,28 +67,133 @@ public class ExtHashIndex implements Index {
 		close();	// TODO new close func?
 		this.searchkey = searchkey;
 		int hashCode = searchkey.hashCode();
-		int divisor = (int) Math.pow(2, globalDepth);
-		int bucket = hashCode % divisor;
+		int divisor = (int) Math.pow(2, getGlobalDepth());
+		int originBucket = hashCode % divisor;
+		int bucket = getSecIndex(originBucket);
 		
+		String tblname = "directory" + idxname + bucket;
+		TableInfo ti = new TableInfo(tblname, mySch);
+		ts = new TableScan(ti, tx);
 		System.out.println("bucket: " + bucket);
 		
 		// Check if the bucket if full
 		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= 2;
 		if (full && insertion) {
-			// split existed records
+			int tempLocalDepth = 0;
 			
+			// Get the local Depth
+			tempLocalDepth = ts.getInt("LocalDepth");
 			
-			// check if incresase global index
+			// Check if the global index need to be increased
+			if (tempLocalDepth == getGlobalDepth()) {
+				increaseGlobalDepth();
+			}
+			
+			// split existed record
+			split(bucket);
+			
 		}
-		
-		String tblname = "directory" + idxname + bucket;
-		TableInfo ti = new TableInfo(tblname, sch);
-		ts = new TableScan(ti, tx);
 		
 		index.beforeFirst(searchkey, bucket);
 		System.out.println("bucket = " + bucket);
 		System.out.println("number = " + index.getNumberOfRecordsPerTableScan(bucket));
 	}
+	
+	
+	/**
+	 * Split one bucket to two buckets and rearrange records.
+	 * 
+	 * @param bucket original bucket index
+	 */
+	private void split(int bucket) {
+		int key = bucket + (int) Math.pow(2, getGlobalDepth() - 1);
+		
+		// Get the values of original bucket
+		List<RID> tempRID = new ArrayList<RID>();
+		List<Constant> tempVal = new ArrayList<Constant>();
+		int counter = 1;
+		
+		RID rid = index.getDataRid();
+		Constant val = index.getTs().getVal("dataval");
+		tempRID.add(rid);
+		tempVal.add(val);
+		index.delete(val, rid);
+		
+		while(index.next()) {
+			rid = index.getDataRid();
+			val = index.getTs().getVal("dataval");
+			tempRID.add(rid);
+			tempVal.add(val);
+			index.delete(val, rid);
+			counter++;
+		}
+
+		// Reset Local Depth
+		int depth = ts.getInt("LocalDepth");
+		ts.delete();
+		ts.setInt("ExtHashIndex", bucket);
+		ts.setInt("LocalDepth", depth + 1);
+
+		String tblname2 = "directory" + idxname + key;
+		TableInfo ti2 = new TableInfo(tblname2, mySch);
+		TableScan ts2 = new TableScan(ti2, tx);
+		ts2.setInt("ExtHashIndex", key);
+		ts2.setInt("LocalDepth", depth + 1);
+
+		// Reinsert original values
+		for (int i = 0; i < counter; i++) {
+			insert(tempVal.get(i), tempRID.get(i));
+		}
+		
+	}
+	
+	/**
+	 * increase the global index and allocate new indices
+	 */
+	private void increaseGlobalDepth() {
+		for (int i = 0; i < Math.pow(2, getGlobalDepth()); i++) {
+			String tblname3 = "directory" + idxname + i;
+			TableInfo ti3 = new TableInfo(tblname3, sch);
+			TableScan ts3 = new TableScan(ti3, tx);
+			int newkey = (int) Math.pow(2, getGlobalDepth() - 1);
+			int depth = ts3.getInt("LocalDepth");
+
+			String tblname4 = "directory" + idxname + newkey;
+			TableInfo ti4 = new TableInfo(tblname4, sch);
+			TableScan ts4 = new TableScan(ti4, tx);
+			ts4.setInt("ExtHashIndex", newkey);
+			ts4.setInt("LocalDepth", depth);
+		}
+	}
+		
+		/*SecondHashIndex newIndex = new SecondHashIndex(idxname, sch, tx);
+		rearrange(newIndex, newKey);
+	}
+	
+	private void rearrange(SecondHashIndex newIndex, int newKey) {
+		List<RID> tempRID = new ArrayList<RID>();
+		List<Constant> tempVal = new ArrayList<Constant>();
+		int counter = 1;
+		
+		RID rid = index.getDataRid();
+		Constant val = index.getTs().getVal("dataval");
+		tempRID.add(rid);
+		tempVal.add(val);
+		index.delete(val, rid);
+		
+		while(index.next()) {
+			rid = index.getDataRid();
+			val = index.getTs().getVal("dataval");
+			tempRID.add(rid);
+			tempVal.add(val);
+			index.delete(val, rid);
+			counter++;
+		}
+		
+		for (int i = 0; i < counter; i++) {
+			
+		}
+	}*/
 
 	/**
 	 * Moves to the next record having the search key.
@@ -93,9 +203,10 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#next()
 	 */
 	public boolean next() {
-		while (ts.next())
+		while (ts.next()) {
 			if (ts.getVal("dataval").equals(searchkey))
 				return true;
+		}
 		return false;
 	}
 
@@ -114,8 +225,11 @@ public class ExtHashIndex implements Index {
 	 */
 	public void insert(Constant val, RID rid) {
 		insertion = true;
-		if (ts.getVal("LocalDepth") == null) {
+		
+		// TS is null
+		if (ts == null) {
 			ts.setInt("LocalDepth", 1);
+			ts.setInt("ExtHashIndex", 0);
 		}
 		beforeFirst(val);
 		index.insert(val, rid);
@@ -186,7 +300,7 @@ public class ExtHashIndex implements Index {
 	public Integer getGlobalDepth() {
 		int globalDepth = -1;
 		// get TableScan
-		String tblname = "directory" + idxname + "0";
+		String tblname = "directory" + idxname + 0;
 		TableInfo ti = new TableInfo(tblname, sch);
 		TableScan ts = new TableScan(ti, tx);
 		// counting next()
@@ -194,9 +308,7 @@ public class ExtHashIndex implements Index {
 		while(ts.next()) {
 			count++;
 		}
-		globalDepth = count;
+		globalDepth = (int) Math.ceil((Math.log(count)/Math.log(2)));
 		return globalDepth;
 	}
-	
-	
 }
