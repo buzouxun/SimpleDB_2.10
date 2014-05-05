@@ -70,10 +70,11 @@ public class ExtHashIndex implements Index {
 		// Check if the bucket if full
 		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= 2;
 		if (full && insertion) {
-			// split existed records
+			split(bucket);
+			// split existed record
 			
 			
-			// check if incresase global index
+			// check if incresase global index£¬ based on its local depth
 		}
 		
 		String tblname = "directory" + idxname + bucket;
@@ -83,6 +84,15 @@ public class ExtHashIndex implements Index {
 		index.beforeFirst(searchkey, bucket);
 		System.out.println("bucket = " + bucket);
 		System.out.println("number = " + index.getNumberOfRecordsPerTableScan(bucket));
+	}
+	
+	private void split(int bucket) {
+		int key = bucket + (int) Math.pow(2, globalDepth - 1);
+		/*String newTableName = idxname + key;
+		TableInfo newTi = new TableInfo(newTableName, sch);
+		TableScan newTs = new TableScan(newTi, tx);*/
+		SecondHashIndex newIndex = new SecondHashIndex(idxname, sch, tx);
+		
 	}
 
 	/**
