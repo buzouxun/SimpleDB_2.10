@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import simpledb.planner.Planner;
 import simpledb.query.Plan;
 import simpledb.tx.Transaction;
@@ -192,5 +194,53 @@ public class TestUtility {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	public static void delete(File file) {
+
+		try {
+		if(file.isDirectory()){
+
+			//directory is empty, then delete it
+			if(file.list().length==0){
+
+				file.delete();
+				System.out.println("Directory is deleted : " 
+						+ file.getAbsolutePath());
+
+			}else{
+
+				//list all the directory contents
+				String files[] = file.list();
+
+				for (String temp : files) {
+					//construct the file structure
+					File fileDelete = new File(file, temp);
+
+					//recursive delete
+					delete(fileDelete);
+				}
+
+				//check the directory again, if empty then delete it
+				if(file.list().length==0){
+					file.delete();
+					System.out.println("Directory is deleted : " 
+							+ file.getAbsolutePath());
+				}
+			}
+
+		}else{
+			//if file, then delete it
+			file.delete();
+			System.out.println("File is deleted : " + file.getAbsolutePath());
+		}
+		}
+		catch (IOException e) {
+			System.err.println("Deleting studentdb directory is denied!");
+			e.printStackTrace();
+		}
+	}
+	
 
 }	

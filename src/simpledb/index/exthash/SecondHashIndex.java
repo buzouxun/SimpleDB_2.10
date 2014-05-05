@@ -142,6 +142,11 @@ public class SecondHashIndex implements Index {
 		return numblocks / HashIndex.NUM_BUCKETS;
 	}
 	
+	/**
+	 * TODO tests
+	 * @param key
+	 * @return
+	 */
 	public int getNumberOfRecordsPerTableScan(int key) {
 		String tblname = idxname + key;
 		TableInfo ti2 = new TableInfo(tblname, sch);
