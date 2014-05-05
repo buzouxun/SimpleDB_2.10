@@ -3,6 +3,9 @@
  */
 package simpledb.index.exthash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.index.Index;
 import simpledb.index.hash.HashIndex;
 import simpledb.query.Constant;
@@ -62,6 +65,13 @@ public class SecondHashIndex implements Index {
 		TableInfo ti = new TableInfo(tblname, sch);
 		ts = new TableScan(ti, tx);
 	}
+	
+	public void beforeFirst(int key) {
+		close();
+		String tblname = idxname + key;
+		TableInfo ti = new TableInfo(tblname, sch);
+		ts = new TableScan(ti, tx);
+	}
 
 	/**
 	 * Moves to the next record having the search key.
@@ -71,10 +81,7 @@ public class SecondHashIndex implements Index {
 	 * @see simpledb.index.Index#next()
 	 */
 	public boolean next() {
-		while (ts.next()) {
-			
-			System.out.println("ts.getVal('dataval') = " + ts.getVal("dataval"));	//TODO delete
-			
+		while (ts.next()) {			
 			if (ts.getVal("dataval").equals(searchkey))
 				return true;
 		}
@@ -138,7 +145,7 @@ public class SecondHashIndex implements Index {
 	 * @param rpb the number of records per block (not used here)
 	 * @return the cost of traversing the index
 	 */
-	public static int searchCost(int numblocks, int rpb){
+	public static int searchCost(int numblocks, int rpb) {
 		return numblocks / HashIndex.NUM_BUCKETS;
 	}
 	
@@ -159,8 +166,25 @@ public class SecondHashIndex implements Index {
 		return n;
 	}
 	
-	public TableScan getTs() {
-		return ts;
+	public List<Constant> getAllKeys() {
+		List<Constant> keys= new ArrayList<Constant>();
+		ts.beforeFirst();
+		while(ts.next()) {
+			keys.add(ts.getVal("dataval"));
+		}
+		return keys;
 	}
 	
+	public List<RID> getAllRids() {
+		List<RID> rids= new ArrayList<RID>();
+		ts.beforeFirst();
+		while(ts.next()) {
+			rids.add(getDataRid());
+		}
+		return rids;
+	}
+	
+	public TableScan getTs() {
+		return ts;
+	}	
 }
