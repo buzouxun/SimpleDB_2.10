@@ -59,7 +59,7 @@ public class ExtHashIndex implements Index {
 	 * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
-		close();	// TODO new close func
+		close();	// TODO new close func?
 		this.searchkey = searchkey;
 		int hashCode = searchkey.hashCode();
 		int divisor = (int) Math.pow(2, globalDepth);
@@ -155,6 +155,47 @@ public class ExtHashIndex implements Index {
 	 */
 	public static int searchCost(int numblocks, int rpb){
 		return numblocks / HashIndex.NUM_BUCKETS;
+	}
+	
+	/**
+	 * Helper Function
+	 * get second index for a tuple that will be inserted
+	 * TODO testing
+	 * @param extIndex
+	 * @return
+	 */
+	public Integer getSecIndex(int extIndex) {
+		int secondHashIndex = -1;
+		// get TableScane
+		String tblname = "directory" + idxname + extIndex;
+		TableInfo ti = new TableInfo(tblname, sch);
+		TableScan ts = new TableScan(ti, tx);
+		// get localDepth stored in this TableScan
+		int localDepth = ts.getInt("LocalDepth");
+		// compute the second hash index based on extIndax and localDepth
+		secondHashIndex = (int) ( extIndex % Math.pow(2, ((double)localDepth)) );
+		return secondHashIndex;
+	}
+	
+	/**
+	 * Helper Function
+	 * get current global depth
+	 * TODO testing
+	 * @return
+	 */
+	public Integer getGlobalDepth() {
+		int globalDepth = -1;
+		// get TableScan
+		String tblname = "directory" + idxname + "0";
+		TableInfo ti = new TableInfo(tblname, sch);
+		TableScan ts = new TableScan(ti, tx);
+		// counting next()
+		int count = 0;
+		while(ts.next()) {
+			count++;
+		}
+		globalDepth = count;
+		return globalDepth;
 	}
 	
 	
