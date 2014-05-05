@@ -196,7 +196,11 @@ public class TestUtility {
 	}
 	
 	
-	
+	/**
+	 * delete a directory
+	 * @param file
+	 * @throws IOException
+	 */
 	public static void delete(File file) throws IOException{
 
 		try {

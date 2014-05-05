@@ -57,7 +57,7 @@ public class IndexInfo {
       }
       
       // Create new HashIndex for B-Tree indexing
-      else if (type.equals("sh")) {
+      else if (type.equals("bt")) {
     	  return new BTreeIndex(idxname, sch, tx);
       }
       
