@@ -21,7 +21,7 @@ public class JoinTestTables {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+		// Connect to the server
 		Connection conn = null;
 		Driver d = new SimpleDriver();
 		String host = "localhost"; // you may change it if your SimpleDB server is running on a different machine
@@ -34,7 +34,7 @@ public class JoinTestTables {
 			// 4 join query
 			String unit = "\tnano second";
 			// anther join as the first one in case any inaccuracy in the first join job
-			s.executeQuery("SELECT a1,a2,a3,a4 FROM test5, test1 where a3=a1;");
+			// s.executeQuery("SELECT a1,a2,a3,a4 FROM test5, test1 where a3=a1;");
 			// test1
 			markStartTime();
 			s.executeQuery("SELECT a1,a2,a3,a4 FROM test5, test1 where a3=a1;");

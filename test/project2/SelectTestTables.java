@@ -8,24 +8,25 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
-import java.util.Random;
 
+import project1.TestUtility;
 import simpledb.remote.SimpleDriver;
+import simpledb.server.Startup;
 
 public class SelectTestTables {
 	static long startDateTime = 0;
 	static long endDateTime = 0;
-	static int equalityValue = 70;
+	static int equalityValue = 896;
 
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws Exception {
+		// Connect to the server
 		Connection conn = null;
 		Driver d = new SimpleDriver();
-		String host = "localhost"; // you may change it if your SimpleDB server is running on a different machine
+		String host = "localhost";	// you may change it if your SimpleDB server is running on a different machine
 		String url = "jdbc:simpledb://" + host;
 		Statement s = null;
 		try {
@@ -34,23 +35,25 @@ public class SelectTestTables {
 			
 			// 4 selection query			
 			String unit = "\tnano second";
-			// anther selection job as the first one in case any inaccuracy in the first one
-			s.executeQuery("SELECT a1,a2 FROM test5 where a1=1;");
+			
 			// test1
 			markStartTime();
 			s.executeQuery("SELECT a1,a2 FROM test1 where a1=" + equalityValue + ";");
 			markEndTime();
 			System.out.println("Selection time of test1:\t" + cousumedTime() + unit);
+			
 			// test2
 			markStartTime();
 			s.executeQuery("SELECT a1,a2 FROM test2 where a1=" + equalityValue + ";");
 			markEndTime();
 			System.out.println("Selection time of test2:\t" + cousumedTime() + unit);
+			
 			// test3
 			markStartTime();
 			s.executeQuery("SELECT a1,a2 FROM test3 where a1=" + equalityValue + ";");
 			markEndTime();
 			System.out.println("Selection time of test3:\t" + cousumedTime() + unit);
+			
 			// test4
 			markStartTime();
 			s.executeQuery("SELECT a1,a2 FROM test4 where a1=" + equalityValue + ";");
