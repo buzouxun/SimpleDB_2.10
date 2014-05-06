@@ -29,6 +29,13 @@ class RemoteStatementImpl extends UnicastRemoteObject implements RemoteStatement
       try {
          Transaction tx = rconn.getTransaction();
          Plan pln = SimpleDB.planner().createQueryPlan(qry, tx);
+         
+         // Print I/O needs for this query
+         System.out.println("==================================");
+         System.out.println("Execute "+ qry);
+         System.out.println("I/O cost is: " + pln.blocksAccessed());
+         System.out.println("==================================");
+         
          return new RemoteResultSetImpl(pln, rconn);
       }
       catch(RuntimeException e) {

@@ -16,7 +16,7 @@ import simpledb.tx.Transaction;
  * bucket can be edited by edit maxBucketSize in the field
  */
 public class ExtHashIndex implements Index {
-	private static int maxBucketSize = 128; // The size of the bucket
+	private static int maxBucketSize = 2; // The size of the bucket
 	private SecondHashIndex index; // The index for each bucket
 	private Schema mySch = new Schema(); // Schema for this index, including a
 											// key and a local depth
@@ -28,6 +28,8 @@ public class ExtHashIndex implements Index {
 	private Transaction tx;
 	private Constant searchkey = null;
 	private TableScan ts = null;
+	private Constant val;	// Current value;
+	private RID rid;	// Current rid
 
 	/**
 	 * Opens a extensible hash index for the specified index and construct a new
@@ -243,7 +245,10 @@ public class ExtHashIndex implements Index {
 	 *      simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
+		this.val = val;
+		this.rid = rid;
 		insertion = true;
+		
 		beforeFirst(val);
 		index.insert(val, rid);
 		toString(val, rid);
@@ -258,7 +263,10 @@ public class ExtHashIndex implements Index {
 	 *      simpledb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
+		this.val = val;
+		this.rid = rid;
 		insertion = false;
+		
 		beforeFirst(val);
 		index.delete(val, rid);
 		toString(val, rid);
@@ -333,11 +341,18 @@ public class ExtHashIndex implements Index {
 			action = "deletion";
 		
 		// Print messages
+		System.out.println("=================================================");
 		System.out.println("Do " + action + " on val=" + val + " rid=" + rid);
 		System.out.println("Global Depth =" + getGlobalDepth());
+		System.out.println("=================================================");
 		System.out.println("");
 		System.out.println("");
-		System.out.println("");
+		
 		return "Do " + action + " on val=" + val + " rid=" + rid;
+	}
+	
+	@Override
+	public String toString() {
+		return toString(val, rid);
 	}
 }

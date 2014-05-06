@@ -16,7 +16,7 @@ import simpledb.remote.SimpleDriver;
 import simpledb.server.Startup;
 
 public class CreateTestTables {
-	final static int maxSize = 1000;
+	final static int maxSize = 20000;
 	final static int rand_maxValue = 1000;
 	static int num777 = 0;
 

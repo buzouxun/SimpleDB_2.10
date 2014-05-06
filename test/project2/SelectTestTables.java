@@ -2,16 +2,12 @@ package project2;
 
 /******************************************************************/
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import project1.TestUtility;
 import simpledb.remote.SimpleDriver;
-import simpledb.server.Startup;
 
 public class SelectTestTables {
 	static long startDateTime = 0;
