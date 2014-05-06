@@ -48,8 +48,8 @@ public class Transaction {
       recoveryMgr.commit();
       concurMgr.release();
       myBuffers.unpinAll();
-//      System.out.println("transaction " + txnum + " committed");
-      SimpleDB.myMetaData.addTxLog("transaction " + txnum + " committed");	// CS4432-Project1: add commited transaction into logs in MyMetaData
+      System.out.println("transaction " + txnum + " committed");
+//      SimpleDB.myMetaData.addTxLog("transaction " + txnum + " committed");	// CS4432-Project1: add commited transaction into logs in MyMetaData
    }
    
    /**
@@ -201,8 +201,8 @@ public class Transaction {
    
    private static synchronized int nextTxNumber() {
       nextTxNum++;
-//      System.out.println("new transaction: " + nextTxNum);
-      SimpleDB.myMetaData.addTxLog("new transaction: " + nextTxNum);	// CS4432-Project1: add new transaction into logs in MyMetaData
+      System.out.println("new transaction: " + nextTxNum);
+//      SimpleDB.myMetaData.addTxLog("new transaction: " + nextTxNum);	// CS4432-Project1: add new transaction into logs in MyMetaData
       return nextTxNum;
    }
 }

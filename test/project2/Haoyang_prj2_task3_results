@@ -1,0 +1,19 @@
+张昊阳/IMGD+CS2014  11:27:28 PM
+IOCost is: 14
+IOCost is: 14
+IOCost is: 12
+IOCost is: 14
+IOCost is: 24
+IOCost is: 27
+IOCost is: 28
+IOCost is: 28
+
+Table 1 query took 23944us.
+Table 2 query took 3859us.
+Table 3 query took 2759us.
+Table 4 query took 2389us.
+
+Table 5 join with Table 1 took 3878us.
+Table 5 join with Table 2 took 2822us.
+Table 5 join with Table 3 took 2878us.
+Table 5 join with Table 4 took 3221us.
