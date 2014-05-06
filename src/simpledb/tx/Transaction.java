@@ -49,7 +49,6 @@ public class Transaction {
       concurMgr.release();
       myBuffers.unpinAll();
       System.out.println("transaction " + txnum + " committed");
-//      SimpleDB.myMetaData.addTxLog("transaction " + txnum + " committed");	// CS4432-Project1: add commited transaction into logs in MyMetaData
    }
    
    /**

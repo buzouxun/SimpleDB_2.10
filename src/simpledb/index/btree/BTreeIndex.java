@@ -26,10 +26,7 @@ public class BTreeIndex implements Index {
     * @param leafsch the schema of the leaf index records
     * @param tx the calling transaction
     */
-   public BTreeIndex(String idxname, Schema leafsch, Transaction tx) {
-	   
-	   System.out.println("BTTTT");
-	   
+   public BTreeIndex(String idxname, Schema leafsch, Transaction tx) {	   
       this.tx = tx;
       // deal with the leaves
       String leaftbl = idxname + "leaf";
