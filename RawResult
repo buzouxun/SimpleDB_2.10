@@ -18,13 +18,13 @@ time of the first join: 	86351231967	nano seconds
 time of the second join: 	195832770	nano seconds
 
 
-Exp 1 - numRecordToInsert = 800;
+Exp 2 - numRecordToInsert = 800;
 
 time of the first join: 	120674056196	nano seconds
 time of the second join: 	622811867	nano seconds
 
 
-Exp 1 - numRecordToInsert = 1000;
+Exp 3 - numRecordToInsert = 1000;
 
 time of the first join: 	143124841087	nano seconds
 time of the second join: 	762170968	nano seconds
