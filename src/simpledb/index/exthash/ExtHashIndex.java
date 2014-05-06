@@ -25,7 +25,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
-	private static int maxBucketSize = 64; 
+	private static int maxBucketSize = 400; 
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -71,7 +71,8 @@ public class ExtHashIndex implements Index {
 		
 		close();	// TODO new close func?
 		this.searchkey = searchkey;
-		int hashCode = Integer.parseInt(searchkey.toString()) - 1;
+//		int hashCode = Integer.parseInt(searchkey.toString()) - 1;
+		int hashCode = Integer.parseInt(searchkey.toString());
 		System.out.println("HashCode = " + hashCode);  
 		int divisor = (int) Math.pow(2, getGlobalDepth());
 		System.out.println("getGlobalDepth() = " + getGlobalDepth());

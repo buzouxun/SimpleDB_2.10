@@ -47,7 +47,7 @@ public class CreateTestTables {
 			s.executeUpdate("create bt index idx3 on test3 (a1)");
 
 			// insert values
-			for (int i = 1; i < 6; i++) {
+			for (int i = 1; i < 4; i++) {
 				if (i != 5) {
 					rand = new Random(1);// ensure every table gets the same data
 					for (int j = 0; j < maxSize; j++) {
