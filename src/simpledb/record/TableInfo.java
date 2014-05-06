@@ -14,7 +14,7 @@ public class TableInfo {
    private int recordlen;
    private String tblname;
    
-   //TODO testing flag of sorted
+   // testing flag of sorted
    public boolean sorted = false;
    
    /**

@@ -1,0 +1,30 @@
+
+Planner: ExploitSortQueryPlanner
+
+Idea: the first merge-join phase will run in open() function in MergeJoinPlan.java. The sorted flag in TableInfo will be used here to decide whether need to go through the first phase. 
+
+
+two table: test1 & test2. two tables have the same primary keys but in the reverse order, with the purpose to gurantee that the full functionality merge-join will be needed to run
+
+
+Two Querys for mergejoin job:
+SELECT a1,a2 FROM test1
+SELECT b1,b2 FROM test2
+
+
+Exp 1 - numRecordToInsert = 600;
+
+time of the first join: 	86351231967	nano seconds
+time of the second join: 	195832770	nano seconds
+
+
+Exp 1 - numRecordToInsert = 800;
+
+time of the first join: 	120674056196	nano seconds
+time of the second join: 	622811867	nano seconds
+
+
+Exp 1 - numRecordToInsert = 1000;
+
+time of the first join: 	143124841087	nano seconds
+time of the second join: 	762170968	nano seconds

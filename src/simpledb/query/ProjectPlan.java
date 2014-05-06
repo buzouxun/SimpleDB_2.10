@@ -1,6 +1,8 @@
 package simpledb.query;
 
+import simpledb.record.RecordFile;
 import simpledb.record.Schema;
+
 import java.util.Collection;
 
 /** The Plan class corresponding to the <i>project</i>

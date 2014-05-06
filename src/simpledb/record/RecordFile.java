@@ -10,11 +10,13 @@ import simpledb.tx.Transaction;
  * @author Edward Sciore
  */
 public class RecordFile {
-   private TableInfo ti;
+   public TableInfo ti;
    private Transaction tx;
-   private String filename;
+   public String filename;
    private RecordPage rp;
-   private int currentblknum;
+   public int currentblknum;
+   
+   public boolean sorted = false;
    
    /**
     * Constructs an object to manage a file of records.
