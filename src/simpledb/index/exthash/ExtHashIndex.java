@@ -16,7 +16,7 @@ import simpledb.tx.Transaction;
  * bucket can be edited by edit maxBucketSize in the field
  */
 public class ExtHashIndex implements Index {
-	private static int maxBucketSize = 256; // The size of the bucket
+	private static int maxBucketSize = 512; // The size of the bucket
 	private SecondHashIndex index; // The index for each bucket
 	private Schema mySch = new Schema(); // Schema for this index, including a
 											// key and a local depth
