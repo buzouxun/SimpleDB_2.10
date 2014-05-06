@@ -1,13 +1,9 @@
-/**
- * 
- */
 package simpledb.index.exthash;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import simpledb.index.Index;
-import simpledb.index.hash.HashIndex;
 import simpledb.query.Constant;
 import simpledb.query.TableScan;
 import simpledb.record.RID;
@@ -16,11 +12,10 @@ import simpledb.record.TableInfo;
 import simpledb.tx.Transaction;
 
 /**
- * @author lty
- *
+ * The internal index of the extensible hash index. This index link all records in the same bucket
+ * and execute insertion and deletion on the disk.
  */
 public class SecondHashIndex implements Index {
-	public static int BUCKET_SIZE = 2;
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -28,7 +23,7 @@ public class SecondHashIndex implements Index {
 	private TableScan ts = null;
 	
 	/**
-	 * Opens a extensible hash index for the specified index.
+	 * Construct a new SecondHashIndex
 	 * @param idxname the name of the index
 	 * @param sch the schema of the index records
 	 * @param tx the calling transaction
@@ -40,38 +35,30 @@ public class SecondHashIndex implements Index {
 	}
 
 	/**
-	 * Positions the index before the first index record
-	 * having the specified search key.
-	 * The method hashes the search key to determine the bucket,
-	 * and then opens a table scan on the file
-	 * corresponding to the bucket.
-	 * The table scan for the previous bucket (if any) is closed.
-	 * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
+	 * Override to implement the interface
+	 * Note actually this index only used to help implementing extensible hash index
+	 * So it would not be invoked by other methods
 	 */
 	public void beforeFirst(Constant searchkey) {
-		close();
-		this.searchkey = searchkey;
-		int bucket = searchkey.hashCode() % 2;
-		String tblname = idxname + bucket;
-		TableInfo ti = new TableInfo(tblname, sch);
 		
-		ts = new TableScan(ti, tx);
-		
-		// TODO no problems here
-		throw new RuntimeException("HAHAHAH");
 	}
 	
+	/**
+	 * Create the TableScan with a search key before insertion and deletion
+	 * @see beforeFirst() in simpledb.index.exthash.ExtHashIndex
+	 */
 	public void beforeFirst(Constant searchkey, int key) {
 		close();
 		this.searchkey = searchkey;
 		String tblname = idxname + key;
 		TableInfo ti = new TableInfo(tblname, sch);
-		ts = new TableScan(ti, tx);
-		
-		//TODO print second hash index/key
-		System.out.println("second hash index: " + key);		
+		ts = new TableScan(ti, tx);	
 	}
 	
+	/**
+	 * Create the TableScan without a search key before insertion and deletion
+	 * @see split() in simpledb.index.exthash.ExtHashIndex
+	 */
 	public void beforeFirst(int key) {
 		close();
 		String tblname = idxname + key;
@@ -110,7 +97,6 @@ public class SecondHashIndex implements Index {
 	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
-		//beforeFirst(val);
 		ts.insert();
 		ts.setInt("block", rid.blockNumber());
 		ts.setInt("id", rid.id());
@@ -140,31 +126,18 @@ public class SecondHashIndex implements Index {
 		if (ts != null)
 			ts.close();
 	}
-
-	/**
-	 * Returns the cost of searching an index file having the
-	 * specified number of blocks.
-	 * The method assumes that all buckets are about the
-	 * same size, and so the cost is simply the size of
-	 * the bucket.
-	 * @param numblocks the number of blocks of index records
-	 * @param rpb the number of records per block (not used here)
-	 * @return the cost of traversing the index
-	 */
-	public static int searchCost(int numblocks, int rpb) {
-		return numblocks / HashIndex.NUM_BUCKETS;
-	}
 	
 	/**
-	 * TODO tests
-	 * @param key
-	 * @return
+	 * @param key the key of the bucket
+	 * @return the number of records in the bucket
 	 */
-	public int getNumberOfRecordsPerTableScan(int key) {
+	public int getNumberOfRecordsOfBucket(int key) {
+		// Create the table scan for the bucket
 		String tblname = idxname + key;
 		TableInfo ti2 = new TableInfo(tblname, sch);
 		TableScan ts2 = new TableScan(ti2, tx);
 		
+		// Count the number of records by traversing the table scan
 		int n = 0;
 		while (ts2.next()) {
 			n++;
@@ -172,6 +145,9 @@ public class SecondHashIndex implements Index {
 		return n;
 	}
 	
+	/**
+	 * @return all dataval (the key of the record) of current bucket
+	 */
 	public List<Constant> getAllKeys() {
 		List<Constant> keys= new ArrayList<Constant>();
 		ts.beforeFirst();
@@ -181,6 +157,9 @@ public class SecondHashIndex implements Index {
 		return keys;
 	}
 	
+	/**
+	 * @return all RIDs of current bucket
+	 */
 	public List<RID> getAllRids() {
 		List<RID> rids= new ArrayList<RID>();
 		ts.beforeFirst();
@@ -190,6 +169,9 @@ public class SecondHashIndex implements Index {
 		return rids;
 	}
 	
+	/**
+	 * @return current table scan
+	 */
 	public TableScan getTs() {
 		return ts;
 	}	

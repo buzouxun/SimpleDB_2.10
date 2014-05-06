@@ -88,7 +88,7 @@ public class ExtHashIndex implements Index {
 		ts = new TableScan(ti, tx);
 		
 		// Check if the bucket if full
-		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= maxBucketSize;
+		boolean full = index.getNumberOfRecordsOfBucket(bucket) >= maxBucketSize;
 		
 		if (full && insertion) {
 			int tempLocalDepth = 0;
