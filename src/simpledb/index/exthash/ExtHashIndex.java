@@ -25,6 +25,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
+	private static int maxBucketSize = 2; 
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -84,7 +85,7 @@ public class ExtHashIndex implements Index {
 		ts = new TableScan(ti, tx);
 		
 		// Check if the bucket if full
-		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= 2;
+		boolean full = index.getNumberOfRecordsPerTableScan(bucket) >= maxBucketSize;
 		
 		if (full && insertion) {
 			int tempLocalDepth = 0;
