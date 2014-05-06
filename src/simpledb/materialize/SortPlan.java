@@ -36,12 +36,19 @@ public class SortPlan implements Plan {
     * @see simpledb.query.Plan#open()
     */
    public Scan open() {
-      Scan src = p.open();
-      List<TempTable> runs = splitIntoRuns(src);
-      src.close();
-      while (runs.size() > 2)
-         runs = doAMergeIteration(runs);
-      return new SortScan(runs, comp);
+	   Scan src = p.open();
+
+	   List<TempTable> runs = splitIntoRuns(src);
+	   src.close();
+	   while (runs.size() > 2)
+		   runs = doAMergeIteration(runs);
+
+	   SortScan sortScan = new SortScan(runs, comp);
+	   
+	   // update RecordFile' TableInfo and flag of sorted
+	   new MySortScan(runs, comp).updateRecordFile(tx);
+	   
+	   return sortScan;
    }
    
    /**

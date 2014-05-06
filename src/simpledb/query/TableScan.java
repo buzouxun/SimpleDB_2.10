@@ -13,7 +13,7 @@ import simpledb.record.*;
  *
  */
 public class TableScan implements UpdateScan {
-   private RecordFile rf;
+   public RecordFile rf;
    private Schema sch;
    
    /**

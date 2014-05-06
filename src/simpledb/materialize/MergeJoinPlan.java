@@ -3,6 +3,7 @@ package simpledb.materialize;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
+
 import java.util.*;
 
 /**
@@ -11,8 +12,11 @@ import java.util.*;
  */
 public class MergeJoinPlan implements Plan {
    private Plan p1, p2;
+   private Plan old_p1, old_p2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
+   private Transaction tx;
+   public static boolean firstPhaseRun = true;
    
    /**
     * Creates a mergejoin plan for the two specified queries.
@@ -28,13 +32,19 @@ public class MergeJoinPlan implements Plan {
       this.fldname1 = fldname1;
       List<String> sortlist1 = Arrays.asList(fldname1);
       this.p1 = new SortPlan(p1, sortlist1, tx);
+      this.old_p1 = p1;
       
       this.fldname2 = fldname2;
       List<String> sortlist2 = Arrays.asList(fldname2);
       this.p2 = new SortPlan(p2, sortlist2, tx);
+      this.old_p2 = p2;
+      
+      this.tx = tx;
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());
+
+      System.out.println("/** MergeJoinPlan is called **/");
    }
    
    /** The method first sorts its two underlying scans
@@ -43,9 +53,20 @@ public class MergeJoinPlan implements Plan {
      * @see simpledb.query.Plan#open()
      */
    public Scan open() {
-      Scan s1 = p1.open();
-      SortScan s2 = (SortScan) p2.open();
-      return new MergeJoinScan(s1, s2, fldname1, fldname2);
+	   
+	   // check if need the first phase of merge-join
+	   boolean firstPhaseRun = this.firstPhaseRun;
+	   
+	   if(firstPhaseRun) {
+		   Scan s1 = p1.open();
+		   SortScan s2 = (SortScan) p2.open();
+		   return new MergeJoinScan(s1, s2, fldname1, fldname2);
+	   }
+	   else {
+		   Scan s1 = old_p1.open();
+		   SortScan s2 = (SortScan) p2.open();
+		   return new MergeJoinScan(s1, (SortScan) s2, fldname1, fldname2);
+	   }
    }
    
    /**

@@ -1,7 +1,10 @@
 package simpledb.materialize;
 
 import simpledb.record.RID;
+import simpledb.record.RecordFile;
+import simpledb.tx.Transaction;
 import simpledb.query.*;
+
 import java.util.*;
 
 /**
@@ -146,5 +149,6 @@ public class SortScan implements Scan {
       s1.moveToRid(rid1);
       if (rid2 != null)
          s2.moveToRid(rid2);
-   }
+   }   
+   
 }

@@ -14,6 +14,9 @@ public class TableInfo {
    private int recordlen;
    private String tblname;
    
+   // testing flag of sorted
+   public boolean sorted = false;
+   
    /**
     * Creates a TableInfo object, given a table name
     * and schema. The constructor calculates the
