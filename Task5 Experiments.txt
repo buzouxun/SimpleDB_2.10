@@ -1,0 +1,38 @@
+
+Task 5 Experiments
+
+Extended Planner: ExploitSortQueryPlanner
+
+Idea 1: the first merge-join phase will run in open() function in MergeJoinPlan.java. The sorted flag in TableInfo will be used there to decide whether need to go through the first phase. 
+
+Idea 2: MySortScan.java is an extension of the original SortScan.java will contain the updateRecordFile() function, which is able to perform sorting on the original table based 
+on the new generated templateTable.
+
+
+Two table to join: test1 & test2. two tables have the same primary keys with the range starting 1 to the numRecordToInsert, seen below. However the values/key were put in the reverse order in these two files, with the purpose to guarantee that the functionality merge-join will be tested.
+
+
+Two Querys/Plan for mergejoin job:
+SELECT a1,a2 FROM test1
+SELECT b1,b2 FROM test2
+
+
+Exp 1 - numRecordToInsert = 600;
+
+time of the first join: 	86351231967	nano seconds
+time of the second join: 	195832770	nano seconds
+
+
+Exp 2 - numRecordToInsert = 800;
+
+time of the first join: 	120674056196	nano seconds
+time of the second join: 	622811867	nano seconds
+
+
+Exp 3 - numRecordToInsert = 1000;
+
+time of the first join: 	143124841087	nano seconds
+time of the second join: 	762170968	nano seconds
+
+
+In conclusion, the second join will take much less time, since it will not need to run the first phase of the sort-merge join due to its sorted records. 
