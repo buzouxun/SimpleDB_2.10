@@ -13,7 +13,7 @@ import java.util.Random;
 import simpledb.remote.SimpleDriver;
 
 public class CreateTestTables {
-	final static int maxSize = 15000;
+	final static int maxSize = 1000;
 	final static int rand_maxValue = 100;
 
 	/**
@@ -40,8 +40,10 @@ public class CreateTestTables {
 
 			// create 4 index
 			s.executeUpdate("create sh index idx1 on test1 (a1)");
-			//			s.executeUpdate("create ex index idx2 on test2 (a1)");
-			s.executeUpdate("create sh index idx2 on test2 (a1)");		//TODO testing
+			s.executeUpdate("create eh index idx2 on test2 (a1)");
+			
+//			s.executeUpdate("create sh index idx2 on test2 (a1)");		//TODO testing
+			
 			s.executeUpdate("create bt index idx3 on test3 (a1)");
 
 			// insert values
@@ -55,7 +57,8 @@ public class CreateTestTables {
 					}
 				} else// case where i=5
 				{
-					for (int j = 0; j < maxSize / 2; j++)// insert 10000 records into test5
+//					for (int j = 0; j < maxSize / 2; j++) // insert 10000 records into test5
+					for (int j = 0; j < maxSize / 2; j++) // insert same number of records
 					{
 						s.executeUpdate("insert into test" + i
 								+ " (a3,a4) values(" + j + "," + j + ")");

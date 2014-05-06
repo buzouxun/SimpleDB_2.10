@@ -25,7 +25,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
-	private static int maxBucketSize = 2; 
+	private static int maxBucketSize = 64; 
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
