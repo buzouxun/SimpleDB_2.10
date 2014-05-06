@@ -35,6 +35,9 @@ public class MergeJoinPlan implements Plan {
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());
+      
+      //TODO Testing if this constructor is called
+      System.out.println("/** MergeJoinPlan is called **/");
    }
    
    /** The method first sorts its two underlying scans

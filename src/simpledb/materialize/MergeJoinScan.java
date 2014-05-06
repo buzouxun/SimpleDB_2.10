@@ -25,6 +25,9 @@ public class MergeJoinScan implements Scan {
       this.fldname1 = fldname1;
       this.fldname2 = fldname2;
       beforeFirst();
+      
+      //TODO Testing if this constructor is called
+      System.out.println("/** MergeJoinScan is called **/");
    }
    
    /**

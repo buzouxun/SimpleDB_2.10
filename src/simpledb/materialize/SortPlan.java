@@ -37,10 +37,24 @@ public class SortPlan implements Plan {
     */
    public Scan open() {
       Scan src = p.open();
+      
+      //TODO testing if Type of p\
+      System.out.println("Type of Plan p: " + p.getClass().toString());
+      
+      //TODO testing if Type of src
+      System.out.println("Type of Scan src: " + src.getClass().toString());
+//      System.out.println("Type of Scan src.s: " + (((ProjectScan) src).getS()).getClass().toString());
+            
       List<TempTable> runs = splitIntoRuns(src);
       src.close();
       while (runs.size() > 2)
          runs = doAMergeIteration(runs);
+      
+      //TODO testing
+      System.out.println("runs.size()= " + runs.size());
+      
+      // replace Original Tables' RecordFile's TableInfo by TempTable
+      
       return new SortScan(runs, comp);
    }
    
