@@ -25,7 +25,7 @@ import simpledb.tx.Transaction;
  *
  */
 public class ExtHashIndex implements Index {
-	private static int maxBucketSize = 400; 
+	private static int maxBucketSize = 32; 
 	private String idxname;
 	private Schema sch;
 	private Transaction tx;
@@ -37,6 +37,8 @@ public class ExtHashIndex implements Index {
 	
 	private Constant searchkey = null;
 	private TableScan ts = null;
+	
+//	public static String log = "my log\n";
 	
 	/**
 	 * Opens a extensible hash index for the specified index.
@@ -120,7 +122,7 @@ public class ExtHashIndex implements Index {
 				System.out.println("after increase = " + ts.getInt("ExtHashIndex"));
 			}
 			// split existed record
-			split(bucket);
+			bucket = split(bucket);
 		}
 		
 		index.beforeFirst(searchkey, bucket);
@@ -132,7 +134,7 @@ public class ExtHashIndex implements Index {
 	 * 
 	 * @param bucket original bucket index
 	 */
-	private void split(int bucket) {
+	private int split(int bucket) {
 		int key = bucket + (int) Math.pow(2, getGlobalDepth() - 1);
 		
 		// Get the values of original bucket
@@ -212,6 +214,14 @@ public class ExtHashIndex implements Index {
 			insert(tempKeys.get(i), tempRIDs.get(i));
 		}
 		System.out.println("Global Depth in increase4= " + getGlobalDepth());
+		
+		int hashCode = Integer.parseInt(searchkey.toString());
+		System.out.println("HashCode = " + hashCode);  
+		int divisor = (int) Math.pow(2, getGlobalDepth());
+		System.out.println("getGlobalDepth() = " + getGlobalDepth());
+		System.out.println("divisor = " + divisor);
+		int originBucket = hashCode % divisor;
+		return bucket = getSecIndex(originBucket);
 	}
 	
 	/**
@@ -225,7 +235,7 @@ public class ExtHashIndex implements Index {
 			//TableInfo ti3 = new TableInfo(tblname3, mySch);
 			TableInfo ti3 = new TableInfo(myTableName, mySch);
 			TableScan ts3 = new TableScan(ti3, tx);
-			int newkey = i + (int) Math.pow(2, getGlobalDepth());
+			int newkey = i + size;
 			while (ts3.next()) {
 				if (ts3.getInt("ExtHashIndex") == i) {
 					depth = ts3.getInt("LocalDepth");
@@ -425,7 +435,7 @@ public class ExtHashIndex implements Index {
 		return globalDepth;
 	}
 	
-	private void toString(Constant val, RID rid) {
+	private String toString(Constant val, RID rid) {
 		String action;
 		if (insertion) {
 			action = "insertion";
@@ -436,5 +446,7 @@ public class ExtHashIndex implements Index {
 		System.out.println("");
 		System.out.println("");
 		System.out.println("");
+		
+		return "Do " + action + " on val=" + val + " rid=" + rid;
 	}
 }

@@ -56,6 +56,9 @@ public class SecondHashIndex implements Index {
 		TableInfo ti = new TableInfo(tblname, sch);
 		
 		ts = new TableScan(ti, tx);
+		
+		// TODO no problems here
+		throw new RuntimeException("HAHAHAH");
 	}
 	
 	public void beforeFirst(Constant searchkey, int key) {
@@ -64,6 +67,9 @@ public class SecondHashIndex implements Index {
 		String tblname = idxname + key;
 		TableInfo ti = new TableInfo(tblname, sch);
 		ts = new TableScan(ti, tx);
+		
+		//TODO print second hash index/key
+		System.out.println("second hash index: " + key);		
 	}
 	
 	public void beforeFirst(int key) {

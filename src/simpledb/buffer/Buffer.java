@@ -17,10 +17,8 @@ public class Buffer {
    private Page contents = new Page();
    private Block blk = null;
    private int pins = 0;
-   private int modifiedBy = -1;  		// negative means not modified
-   private int logSequenceNumber = -1; 	// negative means no corresponding log record
-   private int bufferID = -1;			// CS4432-Project1: the unique id for each buffer
-   private int refBit = 1;				// CS4432-Project1: the refbit for clock replacement policy
+   private int modifiedBy = -1;  // negative means not modified
+   private int logSequenceNumber = -1; // negative means no corresponding log record
 
    /**
     * Creates a new buffer, wrapping a new 
@@ -37,10 +35,6 @@ public class Buffer {
     * is called first.
     */
    public Buffer() {}
-   
-   public Buffer(int index) {
-	   bufferID = index;
-   }
    
    /**
     * Returns the integer value at the specified offset of the
@@ -66,35 +60,7 @@ public class Buffer {
       return contents.getString(offset);
    }
 
-	/**
-	 * CS4432-Project1: Get the logSequenceNumber to find the frame with the oldest time
-	 * 
-	 * @return the logSequenceNumber
-	 */
-	public int getLogSequenceNumber() {
-		return logSequenceNumber;
-	}
-	
-	/**
-	 * CS4432-Project1:
-	 * 
-	 * @return the refBit
-	 */
-	public int getRefBit() {
-		return refBit;
-	}
-
-	/**
-	 * CS4432-Project1:
-	 * 
-	 * @param refBit
-	 *            the refBit to set
-	 */
-	public void setRefBit(int refBit) {
-		this.refBit = refBit;
-	}
-
-/**
+   /**
     * Writes an integer to the specified offset of the
     * buffer's page.
     * This method assumes that the transaction has already
@@ -113,8 +79,6 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
-      setRefBit(1);		// CS 4432 Project1: Set the refBit
-      flush();			// CS 4432 Project1: Flushing 
    }
 
    /**
@@ -136,8 +100,6 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
-      setRefBit(1);		// CS 4432 Project1: Set the refBit
-      flush();			// CS 4432 Project1: Flushing 
    }
 
    /**
@@ -205,7 +167,7 @@ public class Buffer {
     * @param b a reference to the data block
     */
    void assignToBlock(Block b) {
-      // flush();
+      flush();
       blk = b;
       contents.read(blk);
       pins = 0;
@@ -219,18 +181,10 @@ public class Buffer {
     * @param filename the name of the file
     * @param fmtr a page formatter, used to initialize the page
     */
-	void assignToNew(String filename, PageFormatter fmtr) {
-		// flush();
-		fmtr.format(contents);
-		blk = contents.append(filename);
-		pins = 0;
-	}
-
-	/**
-	 * @return the bufferID
-	 */
-	public int getBufferID() {
-		return bufferID;
-	}
-
+   void assignToNew(String filename, PageFormatter fmtr) {
+      flush();
+      fmtr.format(contents);
+      blk = contents.append(filename);
+      pins = 0;
+   }
 }

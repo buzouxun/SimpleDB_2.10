@@ -102,8 +102,10 @@ public class SimpleDB {
     * Creates a planner for SQL commands.
     * To change how the planner works, modify this method.
     * @return the system's planner for SQL commands
-    */public static Planner planner() {
-      QueryPlanner  qplanner = new BasicQueryPlanner();
+    */
+   public static Planner planner() {
+//      QueryPlanner  qplanner = new BasicQueryPlanner();
+      QueryPlanner  qplanner = new HeuristicQueryPlanner();
       UpdatePlanner uplanner = new IndexUpdatePlanner();
       return new Planner(qplanner, uplanner);
    }
